@@ -118,8 +118,28 @@ export function sightingWhere(query: SightingQuery): Prisma.SightingWhereInput {
   return and.length > 0 ? { AND: and } : {};
 }
 
+export const RECENT_WINDOW_DAYS = 14;
+
+export async function recentCutoff(): Promise<Date | null> {
+  const maxRow = await prisma.sighting.aggregate({ _max: { observedAt: true } });
+  const max = maxRow._max.observedAt;
+  if (!max) return null;
+  return new Date(max.getTime() - RECENT_WINDOW_DAYS * 24 * 60 * 60 * 1000);
+}
+
 export async function listSightings(query: SightingQuery): Promise<SightingListResponse> {
-  const where = sightingWhere(query);
+  const baseWhere = sightingWhere(query);
+  let where = baseWhere;
+
+  if (query.recent) {
+    const cutoff = await recentCutoff();
+    if (cutoff) {
+      const recentWhere: Prisma.SightingWhereInput = { observedAt: { gte: cutoff } };
+      where =
+        Object.keys(baseWhere).length > 0 ? { AND: [baseWhere, recentWhere] } : recentWhere;
+    }
+  }
+
   const [total, rows] = await Promise.all([
     prisma.sighting.count({ where }),
     prisma.sighting.findMany({

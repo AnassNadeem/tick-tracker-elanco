@@ -10,6 +10,7 @@ export type MapFilters = {
   species: string;
   severity: string;
   region: string;
+  recent: string;
 };
 
 export const emptyFilters: MapFilters = {
@@ -18,9 +19,10 @@ export const emptyFilters: MapFilters = {
   species: "",
   severity: "",
   region: "",
+  recent: "",
 };
 
-const FILTER_KEYS = ["from", "to", "species", "severity", "region"] as const;
+const FILTER_KEYS = ["from", "to", "species", "severity", "region", "recent"] as const;
 
 export function filtersFromParams(params: URLSearchParams): MapFilters {
   const filters = { ...emptyFilters };

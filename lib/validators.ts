@@ -13,6 +13,7 @@ export const sightingQuerySchema = z
     region: z.string().trim().min(1).optional(),
     species: z.string().trim().min(1).optional(),
     severity: z.enum(["low", "medium", "high", "unrated"]).optional(),
+    recent: z.enum(["1", "true"]).optional(),
     page: z.coerce.number().int().min(1).default(1),
     limit: z.coerce.number().int().min(1).max(1000).default(100),
     north: z.coerce.number().min(-90).max(90).optional(),
