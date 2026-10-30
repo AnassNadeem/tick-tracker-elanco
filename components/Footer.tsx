@@ -1,8 +1,7 @@
 import Link from "next/link";
+import CopyrightYear from "@/components/CopyrightYear";
 
 export default function Footer() {
-  const year = new Date().getFullYear();
-
   return (
     <footer className="site-footer">
       <div className="footer-grid">
@@ -69,7 +68,9 @@ export default function Footer() {
             A placement-task project by Anass Nadeem. Not an official Elanco service. Records describe
             sightings for this exercise and are not a veterinary or medical diagnosis.
           </p>
-          <p>&copy; {year} Tick Tracker</p>
+          <p>
+            &copy; <CopyrightYear /> Tick Tracker
+          </p>
         </div>
       </div>
     </footer>

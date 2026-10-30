@@ -40,7 +40,7 @@ export default function MapScreen() {
   useEffect(() => {
     const next = pageQuery(debouncedFilters, selectedId);
     if (next !== searchParams.toString()) {
-      router.replace(next ? `/?${next}` : "/", { scroll: false });
+      router.replace(next ? `/map?${next}` : "/map", { scroll: false });
     }
   }, [debouncedFilters, selectedId, router, searchParams]);
 

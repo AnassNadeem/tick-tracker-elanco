@@ -285,7 +285,7 @@ export default function ReportForm() {
               </p>
             ))}
             <p>
-              <Link href={`/?sighting=${saved.sighting.id}`}>View it on the map</Link>
+              <Link href={`/map?sighting=${saved.sighting.id}`}>View it on the map</Link>
             </p>
           </div>
         ) : null}
