@@ -7,6 +7,7 @@ import { prisma } from "./db";
 import { validateReport, warningMessages } from "./report-rules";
 import { sightingInclude, toSightingDto } from "./sightings";
 import { findSpeciesBySlug } from "./species-catalog";
+import { getSupabase, isSupabaseStorageConfigured, STORAGE_BUCKET } from "./supabase";
 import type { FieldMessage } from "./types";
 import { reportSchema } from "./validators";
 
@@ -49,18 +50,44 @@ export function reportInputFromForm(form: FormData) {
   return { raw, image };
 }
 
-async function saveImage(image: ReportImage) {
+type StoredImage = { imageUrl: string; cleanup: () => Promise<void> };
+
+async function storeImage(image: ReportImage): Promise<StoredImage> {
   const filename = `${randomUUID()}.jpg`;
-  const directory = path.join(process.cwd(), "public", "uploads");
-  await fs.mkdir(directory, { recursive: true });
   const output = await sharp(image.bytes)
     .rotate()
     .resize({ width: 1600, height: 1600, fit: "inside", withoutEnlargement: true })
     .jpeg({ quality: 80 })
     .toBuffer();
+
+  // Production (Vercel): upload to Supabase Storage so files persist.
+  if (isSupabaseStorageConfigured()) {
+    const supabase = getSupabase();
+    const objectPath = `reports/${filename}`;
+    const { error } = await supabase.storage
+      .from(STORAGE_BUCKET)
+      .upload(objectPath, output, { contentType: "image/jpeg", upsert: false });
+    if (error) throw error;
+    const { data } = supabase.storage.from(STORAGE_BUCKET).getPublicUrl(objectPath);
+    return {
+      imageUrl: data.publicUrl,
+      cleanup: async () => {
+        await supabase.storage.from(STORAGE_BUCKET).remove([objectPath]).catch(() => undefined);
+      },
+    };
+  }
+
+  // Local development fallback: write to public/uploads (gitignored, ephemeral on serverless).
+  const directory = path.join(process.cwd(), "public", "uploads");
+  await fs.mkdir(directory, { recursive: true });
   const filePath = path.join(directory, filename);
   await fs.writeFile(filePath, output);
-  return { filePath, imageUrl: `/uploads/${filename}` };
+  return {
+    imageUrl: `/uploads/${filename}`,
+    cleanup: async () => {
+      await fs.unlink(filePath).catch(() => undefined);
+    },
+  };
 }
 
 export async function createUserSighting(input: {
@@ -110,10 +137,10 @@ export async function createUserSighting(input: {
     };
   }
 
-  let stored: { filePath: string; imageUrl: string } | null = null;
+  let stored: StoredImage | null = null;
   try {
     if (input.image) {
-      stored = await saveImage(input.image);
+      stored = await storeImage(input.image);
     }
     const row = await prisma.sighting.create({
       data: {
@@ -133,7 +160,7 @@ export async function createUserSighting(input: {
     return { ok: true, sighting: toSightingDto(row), warnings };
   } catch (error) {
     if (stored) {
-      await fs.unlink(stored.filePath).catch(() => undefined);
+      await stored.cleanup();
     }
     console.error(error);
     return {

@@ -44,6 +44,9 @@ docs/
 *.db
 *.db-journal
 
+# generated SQL used to seed Supabase; not source
+prisma/_seed/
+
 # uploaded sighting photos
 /public/uploads/*
 !/public/uploads/.gitkeep
