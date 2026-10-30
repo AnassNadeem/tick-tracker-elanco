@@ -1,8 +1,11 @@
+import MapScreen from "@/components/map/MapScreen";
+import { Suspense } from "react";
+
 export default function HomePage() {
   return (
-    <div className="page">
-      <h1>Tick Tracker</h1>
-      <p>UK tick sightings map coming next.</p>
-    </div>
+    <Suspense fallback={<p className="page">Loading the map…</p>}>
+      <h1 className="sr-only">Tick sightings map</h1>
+      <MapScreen />
+    </Suspense>
   );
 }
