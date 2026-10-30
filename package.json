@@ -1,0 +1,44 @@
+{
+  "name": "tick-tracker-elanco",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "db:setup": "prisma migrate deploy && prisma db seed",
+    "db:seed": "prisma db seed",
+    "ingest": "tsx scripts/ingest.ts"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.19.3",
+    "@tanstack/react-query": "^5.105.0",
+    "leaflet": "^1.9.4",
+    "next": "16.4.3",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "react-leaflet": "^5.0.0",
+    "recharts": "^3.10.1",
+    "sharp": "^0.35.5",
+    "supercluster": "^9.1.0",
+    "zod": "^4.6.7"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
+  "devDependencies": {
+    "@tailwindcss/turbopack": "^4",
+    "@types/leaflet": "^1.9.22",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@types/supercluster": "^7.1.3",
+    "eslint": "^9",
+    "eslint-config-next": "16.4.3",
+    "prisma": "^6.19.3",
+    "tailwindcss": "^4",
+    "tsx": "^4.23.15",
+    "typescript": "^5"
+  }
+}

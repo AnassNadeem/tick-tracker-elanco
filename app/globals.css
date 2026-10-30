@@ -1,0 +1,19 @@
+@import "tailwindcss";
+
+:root {
+  --paper: #f3efe6;
+  --ink: #1a2420;
+  --pine: #0e5c4a;
+  --muted: #3d4a44;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: "Source Sans 3", sans-serif;
+}
+
+.page {
+  width: min(68rem, calc(100% - 2rem));
+  margin: 1.5rem auto 2rem;
+}
