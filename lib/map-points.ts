@@ -17,7 +17,8 @@ export function toMapPoints(rows: SightingDto[]): MapPoint[] {
     (max, row) => Math.max(max, new Date(row.observedAt).getTime()),
     0,
   );
-  const recentAfter = maxTime - 365 * 24 * 60 * 60 * 1000;
+  // Highlight sightings within the newest 14 days present in the current view.
+  const recentAfter = maxTime - 14 * 24 * 60 * 60 * 1000;
 
   return rows.map((row) => {
     const baseLat = row.lat ?? row.region.lat;

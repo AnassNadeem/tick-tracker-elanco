@@ -1,13 +1,13 @@
-const SPECIES_MARKS: Record<string, { shape: string; letter: string }> = {
-  "fox-badger-tick": { shape: "diamond", letter: "F" },
-  "marsh-tick": { shape: "circle", letter: "M" },
-  "passerine-tick": { shape: "triangle", letter: "P" },
-  "southern-rodent-tick": { shape: "square", letter: "S" },
-  "tree-hole-tick": { shape: "hex", letter: "T" },
+const SPECIES_MARKS: Record<string, { shape: string; letter: string; color: string }> = {
+  "fox-badger-tick": { shape: "diamond", letter: "F", color: "var(--sp-fox)" },
+  "marsh-tick": { shape: "circle", letter: "M", color: "var(--sp-marsh)" },
+  "passerine-tick": { shape: "triangle", letter: "P", color: "var(--sp-passerine)" },
+  "southern-rodent-tick": { shape: "square", letter: "S", color: "var(--sp-rodent)" },
+  "tree-hole-tick": { shape: "hex", letter: "T", color: "var(--sp-tree)" },
 };
 
 export function speciesMark(slug: string) {
-  return SPECIES_MARKS[slug] ?? { shape: "circle", letter: "?" };
+  return SPECIES_MARKS[slug] ?? { shape: "circle", letter: "?", color: "var(--muted)" };
 }
 
 export function markerHtml(input: {
@@ -18,7 +18,7 @@ export function markerHtml(input: {
 }) {
   const mark = speciesMark(input.speciesSlug);
   const severity = input.severity ?? "unrated";
-  return `<span class="tick-marker" data-shape="${mark.shape}" data-severity="${severity}" data-recent="${input.recent}" data-selected="${input.selected}"><span>${mark.letter}</span></span>`;
+  return `<span class="tick-marker" data-species="${input.speciesSlug}" data-shape="${mark.shape}" data-severity="${severity}" data-recent="${input.recent}" data-selected="${input.selected}"><span>${mark.letter}</span></span>`;
 }
 
 export default function Legend() {
@@ -38,8 +38,9 @@ export default function Legend() {
           <li key={slug}>
             <span
               className="tick-marker legend-swatch"
+              data-species={slug}
               data-shape={speciesMark(slug).shape}
-              data-severity="low"
+              data-severity="unrated"
               aria-hidden="true"
             >
               <span>{speciesMark(slug).letter}</span>
@@ -48,7 +49,12 @@ export default function Legend() {
           </li>
         ))}
       </ul>
-      <p>Shape and letter are the species. Colour is severity: red high, amber medium, green low, dashed grey not recorded. A pale ring means within a year of the newest sighting in this view.</p>
+      <p className="legend-note">
+        <strong>Colour, shape and letter</strong> all show the species (so colour is never the only
+        cue). A <strong>solid border</strong> marks a reported severity &mdash; red high, amber
+        medium, green low; a <strong>dashed border</strong> means severity was not recorded. A{" "}
+        <strong>peach ring</strong> highlights the newest 14 days in view.
+      </p>
     </aside>
   );
 }

@@ -103,9 +103,19 @@ export default function FilterBar({
         </div>
         <button
           type="button"
+          className="recent-toggle"
+          aria-pressed={filters.recent === "1"}
+          onClick={() => update("recent", filters.recent === "1" ? "" : "1")}
+          title="Show only the newest 14 days of sightings in the dataset"
+        >
+          <span className="dot" aria-hidden="true" />
+          Recent (14 days)
+        </button>
+        <button
+          type="button"
           className="text-button"
           onClick={() =>
-            onChange({ from: "", to: "", species: "", severity: "", region: "" })
+            onChange({ from: "", to: "", species: "", severity: "", region: "", recent: "" })
           }
         >
           Clear
