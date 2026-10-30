@@ -76,11 +76,11 @@ export default function SeasonalChart() {
       <div className="chart-frame" aria-hidden="true">
         <ResponsiveContainer width="100%" height={320}>
           <BarChart data={rows}>
-            <CartesianGrid stroke="#e6e1d6" vertical={false} />
+            <CartesianGrid stroke="#d7e1e3" vertical={false} />
             <XAxis dataKey="month" />
             <YAxis allowDecimals={false} />
             <Tooltip />
-            <Bar dataKey="count" fill="#0e5c4a" radius={[4, 4, 0, 0]} />
+            <Bar dataKey="count" fill="#00697f" radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </div>

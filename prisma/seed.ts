@@ -22,7 +22,7 @@ async function seedReferenceData() {
         riskLevel: species.riskLevel,
         description: species.description,
         identificationTips: species.identificationTips,
-        imageUrl: null,
+        imageUrl: `/images/species-${species.slug}.jpg`,
       },
       update: {
         name: species.name,
@@ -30,6 +30,7 @@ async function seedReferenceData() {
         riskLevel: species.riskLevel,
         description: species.description,
         identificationTips: species.identificationTips,
+        imageUrl: `/images/species-${species.slug}.jpg`,
       },
     });
   }
