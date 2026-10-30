@@ -1,0 +1,51 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Region {
+  id        String     @id @default(cuid())
+  name      String     @unique
+  lat       Float
+  lng       Float
+  sightings Sighting[]
+}
+
+model Species {
+  id                 String     @id @default(cuid())
+  slug               String     @unique
+  name               String     @unique
+  latinName          String
+  riskLevel          String
+  description        String
+  identificationTips String
+  imageUrl           String?
+  sightings          Sighting[]
+}
+
+model Sighting {
+  id            String   @id @default(cuid())
+  upstreamId    String?  @unique
+  speciesId     String
+  species       Species  @relation(fields: [speciesId], references: [id])
+  regionId      String
+  region        Region   @relation(fields: [regionId], references: [id])
+  severity      String?
+  observedAt    DateTime
+  locationLabel String?
+  lat           Float?
+  lng           Float?
+  reporterNote  String?
+  imageUrl      String?
+  source        String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([observedAt, regionId])
+  @@index([speciesId])
+  @@index([severity])
+}
