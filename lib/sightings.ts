@@ -175,12 +175,12 @@ export async function getSighting(id: string) {
       take: 40,
     }),
     prisma.$queryRaw<Array<{ periodStart: string | null; count: bigint | number }>>`
-      SELECT strftime('%Y-%m-01T00:00:00.000Z', observedAt / 1000, 'unixepoch') AS periodStart,
-             COUNT(*) AS count
-      FROM Sighting
-      WHERE regionId = ${row.regionId}
-      GROUP BY strftime('%Y-%m', observedAt / 1000, 'unixepoch')
-      ORDER BY periodStart ASC
+      SELECT to_char(date_trunc('month', "observedAt"), 'YYYY-MM-01"T00:00:00.000Z"') AS "periodStart",
+             COUNT(*)::int AS count
+      FROM "Sighting"
+      WHERE "regionId" = ${row.regionId}
+      GROUP BY date_trunc('month', "observedAt")
+      ORDER BY date_trunc('month', "observedAt") ASC
     `,
   ]);
 

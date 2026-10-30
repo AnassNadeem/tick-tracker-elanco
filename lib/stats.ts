@@ -15,15 +15,15 @@ export async function getRegionStats(): Promise<RegionStat[]> {
       id: string;
       region: string;
       count: bigint | number;
-      lastUpdated: bigint | number | null;
+      lastUpdated: Date | string | null;
     }>
   >`
     SELECT r.id AS id,
            r.name AS region,
-           COUNT(s.id) AS count,
-           MAX(s.observedAt) AS lastUpdated
-    FROM Region r
-    LEFT JOIN Sighting s ON s.regionId = r.id
+           COUNT(s.id)::int AS count,
+           MAX(s."observedAt") AS "lastUpdated"
+    FROM "Region" r
+    LEFT JOIN "Sighting" s ON s."regionId" = r.id
     GROUP BY r.id
     ORDER BY count DESC, r.name ASC
   `;
@@ -32,16 +32,15 @@ export async function getRegionStats(): Promise<RegionStat[]> {
     regionId: row.id,
     region: row.region,
     count: Number(row.count),
-    lastUpdated:
-      row.lastUpdated === null ? null : new Date(Number(row.lastUpdated)).toISOString(),
+    lastUpdated: row.lastUpdated === null ? null : new Date(row.lastUpdated).toISOString(),
   }));
 }
 
 function bucketSql(interval: "week" | "month") {
   if (interval === "month") {
-    return Prisma.sql`strftime('%Y-%m-01T00:00:00.000Z', observedAt / 1000, 'unixepoch')`;
+    return Prisma.sql`to_char(date_trunc('month', "observedAt"), 'YYYY-MM-01"T00:00:00.000Z"')`;
   }
-  return Prisma.sql`date(observedAt / 1000, 'unixepoch', '-' || ((cast(strftime('%w', observedAt / 1000, 'unixepoch') as integer) + 6) % 7) || ' days') || 'T00:00:00.000Z'`;
+  return Prisma.sql`to_char(date_trunc('week', "observedAt"), 'YYYY-MM-DD"T00:00:00.000Z"')`;
 }
 
 export async function getTrends(input: {
@@ -56,22 +55,22 @@ export async function getTrends(input: {
 
   const filters: Prisma.Sql[] = [];
   if (input.region) {
-    filters.push(Prisma.sql`regionId = (SELECT id FROM Region WHERE name = ${input.region})`);
+    filters.push(Prisma.sql`"regionId" = (SELECT id FROM "Region" WHERE name = ${input.region})`);
   }
-  if (input.from) filters.push(Prisma.sql`observedAt >= ${input.from.getTime()}`);
-  if (input.to) filters.push(Prisma.sql`observedAt <= ${input.to.getTime()}`);
+  if (input.from) filters.push(Prisma.sql`"observedAt" >= ${input.from}`);
+  if (input.to) filters.push(Prisma.sql`"observedAt" <= ${input.to}`);
 
   const where =
     filters.length > 0 ? Prisma.sql`WHERE ${Prisma.join(filters, " AND ")}` : Prisma.empty;
   const bucket = bucketSql(input.interval);
 
   const rows = await prisma.$queryRaw<Array<{ periodStart: string | null; count: bigint | number }>>`
-    SELECT ${bucket} AS periodStart,
-           COUNT(*) AS count
-    FROM Sighting
+    SELECT ${bucket} AS "periodStart",
+           COUNT(*)::int AS count
+    FROM "Sighting"
     ${where}
-    GROUP BY periodStart
-    ORDER BY periodStart ASC
+    GROUP BY ${bucket}
+    ORDER BY ${bucket} ASC
   `;
 
   return {

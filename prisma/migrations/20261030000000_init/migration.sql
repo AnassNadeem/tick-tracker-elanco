@@ -1,41 +1,45 @@
 -- CreateTable
 CREATE TABLE "Region" (
-    "id" TEXT NOT NULL PRIMARY KEY,
+    "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
-    "lat" REAL NOT NULL,
-    "lng" REAL NOT NULL
+    "lat" DOUBLE PRECISION NOT NULL,
+    "lng" DOUBLE PRECISION NOT NULL,
+
+    CONSTRAINT "Region_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "Species" (
-    "id" TEXT NOT NULL PRIMARY KEY,
+    "id" TEXT NOT NULL,
     "slug" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "latinName" TEXT NOT NULL,
     "riskLevel" TEXT NOT NULL,
     "description" TEXT NOT NULL,
     "identificationTips" TEXT NOT NULL,
-    "imageUrl" TEXT
+    "imageUrl" TEXT,
+
+    CONSTRAINT "Species_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "Sighting" (
-    "id" TEXT NOT NULL PRIMARY KEY,
+    "id" TEXT NOT NULL,
     "upstreamId" TEXT,
     "speciesId" TEXT NOT NULL,
     "regionId" TEXT NOT NULL,
     "severity" TEXT,
-    "observedAt" DATETIME NOT NULL,
+    "observedAt" TIMESTAMP(3) NOT NULL,
     "locationLabel" TEXT,
-    "lat" REAL,
-    "lng" REAL,
+    "lat" DOUBLE PRECISION,
+    "lng" DOUBLE PRECISION,
     "reporterNote" TEXT,
     "imageUrl" TEXT,
     "source" TEXT NOT NULL,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" DATETIME NOT NULL,
-    CONSTRAINT "Sighting_speciesId_fkey" FOREIGN KEY ("speciesId") REFERENCES "Species" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
-    CONSTRAINT "Sighting_regionId_fkey" FOREIGN KEY ("regionId") REFERENCES "Region" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Sighting_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -58,3 +62,9 @@ CREATE INDEX "Sighting_speciesId_idx" ON "Sighting"("speciesId");
 
 -- CreateIndex
 CREATE INDEX "Sighting_severity_idx" ON "Sighting"("severity");
+
+-- AddForeignKey
+ALTER TABLE "Sighting" ADD CONSTRAINT "Sighting_speciesId_fkey" FOREIGN KEY ("speciesId") REFERENCES "Species"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Sighting" ADD CONSTRAINT "Sighting_regionId_fkey" FOREIGN KEY ("regionId") REFERENCES "Region"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
