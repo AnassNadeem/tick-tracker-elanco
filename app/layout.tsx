@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Fraunces, Source_Sans_3 } from "next/font/google";
+import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import Providers from "@/components/Providers";
 import SkipLink from "@/components/SkipLink";
@@ -18,10 +19,15 @@ const serif = Fraunces({
 
 export const metadata: Metadata = {
   title: {
-    default: "Tick Tracker",
+    default: "Tick Tracker · UK tick sightings",
     template: "%s · Tick Tracker",
   },
-  description: "Map, report, and learn about tick sightings across the UK.",
+  description:
+    "Map, report, and learn about tick sightings across the UK. An Elanco-inspired preventive-care tracker.",
+};
+
+export const viewport = {
+  themeColor: "#00697f",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -34,10 +40,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             <Header />
           </Suspense>
           <main id="main">{children}</main>
-          <footer className="site-footer">
-            A placement-task project by Anass Nadeem. Not an official Elanco service. Records
-            describe sightings for this exercise and are not a veterinary or medical diagnosis.
-          </footer>
+          <Footer />
         </Providers>
       </body>
     </html>
