@@ -2,6 +2,7 @@
 
 import FilterBar from "@/components/map/FilterBar";
 import Legend from "@/components/map/Legend";
+import SightingPanel from "@/components/map/SightingPanel";
 import { useDebounced } from "@/components/useDebounced";
 import { filtersFromParams, filtersToQuery, pageQuery, type MapFilters } from "@/lib/view";
 import { toMapPoints } from "@/lib/map-points";
@@ -81,7 +82,6 @@ export default function MapScreen() {
     () => toMapPoints(sightingsQuery.data?.data ?? []),
     [sightingsQuery.data],
   );
-  const selected = points.find((point) => point.id === selectedId) ?? null;
 
   return (
     <div className="map-shell">
@@ -111,13 +111,8 @@ export default function MapScreen() {
           onBounds={setBounds}
         />
         <Legend />
-        {selected ? (
-          <p className="selected-chip" role="status">
-            Selected: {selected.label}
-            <button type="button" onClick={() => setSelectedId(null)}>
-              Clear selection
-            </button>
-          </p>
+        {selectedId ? (
+          <SightingPanel id={selectedId} onClose={() => setSelectedId(null)} onSelect={setSelectedId} />
         ) : (
           <p className="selected-chip quiet">Choose a marker to read that sighting.</p>
         )}
