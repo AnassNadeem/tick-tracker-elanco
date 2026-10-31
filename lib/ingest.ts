@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { findCity } from "./cities";
 import { prisma } from "./db";
+import { extendRecentYears } from "./extend-years";
 import { findSpeciesByName } from "./species-catalog";
 
 const UPSTREAM_URL = "https://dev-task.elancoapps.com/data/tick-sightings";
@@ -23,6 +24,7 @@ export type IngestResult = {
   skippedUnknown: number;
   skippedBadDate: number;
   latinNameMismatches: string[];
+  extended: number;
 };
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -130,6 +132,7 @@ export async function ingestUpstream(): Promise<IngestResult> {
     speciesId: string;
     regionId: string;
     observedAt: Date;
+    severity: string;
   };
   const rows: Row[] = [];
 
@@ -163,6 +166,7 @@ export async function ingestUpstream(): Promise<IngestResult> {
       speciesId,
       regionId,
       observedAt,
+      severity: species.riskLevel,
     });
   }
 
@@ -176,19 +180,22 @@ export async function ingestUpstream(): Promise<IngestResult> {
             speciesId: row.speciesId,
             regionId: row.regionId,
             observedAt: row.observedAt,
-            severity: null,
+            severity: row.severity,
             source: "upstream",
           },
           update: {
             speciesId: row.speciesId,
             regionId: row.regionId,
             observedAt: row.observedAt,
+            severity: row.severity,
             source: "upstream",
           },
         }),
       ),
     );
   }
+
+  const extended = await extendRecentYears();
 
   return {
     source,
@@ -198,5 +205,6 @@ export async function ingestUpstream(): Promise<IngestResult> {
     skippedUnknown,
     skippedBadDate,
     latinNameMismatches: [...latinNameMismatches],
+    extended: extended.upserted,
   };
 }
