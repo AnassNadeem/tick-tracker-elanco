@@ -38,7 +38,16 @@ yarn-error.log*
 # local planning / agent tooling — keep local only
 .cursor/
 AGENTS.md
-docs/
+.tmp-publish/
+
+# working notes kept off the public repo
+docs/summaries/
+docs/briefs/
+docs/wireframes/
+docs/architecture-plan.md
+docs/architecture.md
+docs/api-notes.md
+docs/decisions.md
 
 # local sqlite
 *.db
