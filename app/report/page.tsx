@@ -8,12 +8,8 @@ export const metadata: Metadata = {
 
 export default function ReportPage() {
   return (
-    <div className="page">
+    <div className="page report-page">
       <h1>Report a sighting</h1>
-      <p className="lede">
-        Add a tick you have seen. Date, time, city, and species are required. A photo and a map pin
-        are optional. This does not notify a vet or a doctor.
-      </p>
       <Suspense fallback={<p>Loading the form…</p>}>
         <ReportForm />
       </Suspense>

@@ -1,15 +1,23 @@
-import Link from "next/link";
 import CopyrightYear from "@/components/CopyrightYear";
+import Image from "next/image";
+import Link from "next/link";
 
 export default function Footer() {
   return (
     <footer className="site-footer">
       <div className="footer-grid">
         <div className="footer-brand">
+          <Image
+            src="/brand/elanco-logo.png"
+            alt="Elanco"
+            width={472}
+            height={234}
+            className="footer-logo"
+          />
           <span className="wordmark">Tick Tracker</span>
           <p>
-            A UK tick-sighting tracker inspired by Elanco&rsquo;s preventive-care mission &mdash; map
-            where ticks are seen, report your own, and learn how to protect people and pets.
+            A UK tick-sighting tracker inspired by Elanco&rsquo;s preventive-care mission. Map where
+            ticks are seen, report your own, and learn how to protect people and pets.
           </p>
         </div>
 

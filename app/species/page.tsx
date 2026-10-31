@@ -5,8 +5,10 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Species guide",
-  description: "A field guide to the five tick species in the dataset — how to spot them and the risk each one carries.",
+  description: "Five tick species in the dataset, ordered from high risk to low, with a short note on how to spot each one.",
 };
+
+const RISK_RANK = { high: 0, medium: 1, low: 2 } as const;
 
 const MARKS: Record<string, { color: string; letter: string }> = {
   "fox-badger-tick": { color: "var(--sp-fox)", letter: "F" },
@@ -17,20 +19,18 @@ const MARKS: Record<string, { color: string; letter: string }> = {
 };
 
 export default function SpeciesPage() {
+  const speciesList = [...SPECIES_CATALOG].sort(
+    (a, b) => RISK_RANK[a.riskLevel] - RISK_RANK[b.riskLevel],
+  );
+
   return (
     <div className="page">
       <div className="page-header">
-        <span className="eyebrow-badge">Field guide</span>
         <h1>Know your ticks</h1>
-        <p className="lede">
-          These five species appear in the sightings dataset. Use the notes to describe what you saw
-          &mdash; they are a field guide, not a laboratory identification or medical advice. Each card
-          matches the colour used for that species on the map.
-        </p>
       </div>
 
-      <div className="card-grid">
-        {SPECIES_CATALOG.map((species) => {
+      <div className="species-grid">
+        {speciesList.map((species) => {
           const mark = MARKS[species.slug] ?? { color: "var(--muted)", letter: "?" };
           return (
             <article key={species.slug} className="species-card">

@@ -11,11 +11,7 @@ export default function ActivityPage() {
       <div className="page-header">
         <span className="eyebrow-badge">Trends</span>
         <h1>Seasonal activity</h1>
-        <p className="lede">
-          Tick activity rises and falls across the year. Explore sightings by month for a single city
-          or the whole UK, and pick a year to compare seasons. The chart and the table below it show
-          the same numbers &mdash; the table is there for anyone who cannot see the chart.
-        </p>
+        <p className="lede">Monthly sightings by city and year.</p>
       </div>
       <SeasonalChart />
     </div>

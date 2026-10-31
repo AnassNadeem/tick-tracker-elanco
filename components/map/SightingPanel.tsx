@@ -172,7 +172,7 @@ export default function SightingPanel({
                   <dt>Where</dt>
                   <dd>
                     {sighting.region.name}
-                    {sighting.locationLabel ? ` — ${sighting.locationLabel}` : ""}
+                    {sighting.locationLabel ? `, ${sighting.locationLabel}` : ""}
                     {sighting.coordinatesAreApproximate
                       ? ". Mapped to the city centre; the record has no exact coordinates."
                       : ""}

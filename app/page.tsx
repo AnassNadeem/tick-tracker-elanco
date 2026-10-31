@@ -1,4 +1,5 @@
-import LandingStats from "@/components/landing/LandingStats";
+import LandingInsights from "@/components/landing/LandingInsights";
+import MapPreview from "@/components/landing/MapPreview";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -16,7 +17,7 @@ const FEATURES = [
     img: "/images/species-fox-badger-tick.jpg",
     alt: "Close-up of a tick on grass",
     title: "Know your species",
-    body: "A field guide to the ticks in the dataset — what they look like, where they live, and how much of a risk each one is.",
+    body: "A field guide to the ticks in the dataset: what they look like, where they live, and how much of a risk each one is.",
     cta: "View the guide",
   },
   {
@@ -40,7 +41,7 @@ const FEATURES = [
 const STEPS = [
   {
     title: "Spot a tick",
-    body: "On a walk, on a pet, or in the garden — note where and when you saw it.",
+    body: "On a walk, on a pet, or in the garden. Note where and when you saw it.",
   },
   {
     title: "Report it",
@@ -90,7 +91,16 @@ export default function HomePage() {
         </div>
       </section>
 
-      <LandingStats />
+      <section className="section map-preview-section" aria-labelledby="preview-title">
+        <div className="section-head">
+          <h2 id="preview-title">Sightings across the UK</h2>
+          <p>Where reports cluster, and which cities see the most.</p>
+        </div>
+        <div className="map-preview-split">
+          <MapPreview />
+          <LandingInsights />
+        </div>
+      </section>
 
       <section className="section" aria-labelledby="how-title">
         <div className="section-head">

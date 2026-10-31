@@ -13,8 +13,8 @@ type TrendResponse = {
 };
 
 export default function SeasonalChart() {
-  const [city, setCity] = useState("London");
-  const [year, setYear] = useState("2024");
+  const [city, setCity] = useState("all");
+  const [year, setYear] = useState("2026");
 
   const query = useQuery({
     queryKey: ["trends", city, year],
@@ -47,7 +47,7 @@ export default function SeasonalChart() {
         <div>
           <label htmlFor="chart-city">City</label>
           <select id="chart-city" value={city} onChange={(event) => setCity(event.target.value)}>
-            <option value="all">All UK</option>
+            <option value="all">All cities</option>
             {CITIES.map((item) => (
               <option key={item.name} value={item.name}>
                 {item.name}
@@ -76,11 +76,11 @@ export default function SeasonalChart() {
       <div className="chart-frame" aria-hidden="true">
         <ResponsiveContainer width="100%" height={320}>
           <BarChart data={rows}>
-            <CartesianGrid stroke="#d7e1e3" vertical={false} />
+            <CartesianGrid stroke="#d4e2ef" vertical={false} />
             <XAxis dataKey="month" />
             <YAxis allowDecimals={false} />
             <Tooltip />
-            <Bar dataKey="count" fill="#00697f" radius={[4, 4, 0, 0]} />
+            <Bar dataKey="count" fill="#0070c8" radius={[4, 4, 0, 0]} isAnimationActive={false} />
           </BarChart>
         </ResponsiveContainer>
       </div>

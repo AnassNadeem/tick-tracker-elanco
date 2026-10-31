@@ -143,29 +143,27 @@ export default function ReportForm() {
   }
 
   return (
-    <form className="form-grid card" onSubmit={onSubmit} noValidate>
-      <div className="field-row">
-        <Field
-          id="observedDate"
-          label="Date"
-          type="date"
-          value={values.observedDate}
-          onChange={(value) => update("observedDate", value)}
-          errors={submitted ? messagesFor(errors, "observedDate") : []}
-          warnings={messagesFor(warnings, "observedDate")}
-          required
-        />
-        <Field
-          id="observedTime"
-          label="Time"
-          type="time"
-          value={values.observedTime}
-          onChange={(value) => update("observedTime", value)}
-          errors={submitted ? messagesFor(errors, "observedTime") : []}
-          warnings={[]}
-          required
-        />
-      </div>
+    <form className="report-form card" onSubmit={onSubmit} noValidate>
+      <Field
+        id="observedDate"
+        label="Date"
+        type="date"
+        value={values.observedDate}
+        onChange={(value) => update("observedDate", value)}
+        errors={submitted ? messagesFor(errors, "observedDate") : []}
+        warnings={messagesFor(warnings, "observedDate")}
+        required
+      />
+      <Field
+        id="observedTime"
+        label="Time"
+        type="time"
+        value={values.observedTime}
+        onChange={(value) => update("observedTime", value)}
+        errors={submitted ? messagesFor(errors, "observedTime") : []}
+        warnings={[]}
+        required
+      />
       <div className="field">
         <label htmlFor="region">City</label>
         <select
@@ -228,10 +226,10 @@ export default function ReportForm() {
           maxLength={160}
         />
       </div>
-      <div className="field">
+      <div className="field field-span">
         <label htmlFor="pin-map">Location pin (optional)</label>
         <p id="pin-help" className="help">
-          Click the map to drop a pin. Leave it empty to record the city only. Changing the city clears the pin.
+          Click the map to drop a pin, or leave it blank to use the city.
         </p>
         <div id="pin-map">
           <PinMap
@@ -245,7 +243,7 @@ export default function ReportForm() {
         </div>
         <Messages id="lat" errors={submitted ? messagesFor(errors, "lat") : []} warnings={[]} />
       </div>
-      <div className="field">
+      <div className="field field-span">
         <label htmlFor="reporterNote">Note (optional)</label>
         <textarea
           id="reporterNote"
@@ -254,10 +252,17 @@ export default function ReportForm() {
           maxLength={1000}
         />
       </div>
-      <div className="field">
+      <div className="field field-span">
         <label htmlFor="image">Photo (optional)</label>
+        <div className="file-row">
+          <label className="file-button" htmlFor="image">
+            Choose a photo
+          </label>
+          <span className="file-name">{file ? file.name : "No file chosen"}</span>
+        </div>
         <input
           id="image"
+          className="file-input"
           type="file"
           accept="image/jpeg,image/png,image/webp,image/gif"
           aria-describedby={
@@ -269,7 +274,7 @@ export default function ReportForm() {
         />
         <Messages id="image" errors={submitted ? messagesFor(errors, "image") : []} warnings={messagesFor(warnings, "image")} />
       </div>
-      <div aria-live="polite">
+      <div className="field-span" aria-live="polite">
         {messagesFor(errors, "form").map((message) => (
           <p key={message.message} className="error-text" role="alert">
             {message.message}

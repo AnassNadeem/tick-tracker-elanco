@@ -49,12 +49,6 @@ export default function Legend() {
           </li>
         ))}
       </ul>
-      <p className="legend-note">
-        <strong>Colour, shape and letter</strong> all show the species (so colour is never the only
-        cue). A <strong>solid border</strong> marks a reported severity &mdash; red high, amber
-        medium, green low; a <strong>dashed border</strong> means severity was not recorded. A{" "}
-        <strong>peach ring</strong> highlights the newest 14 days in view.
-      </p>
     </aside>
   );
 }

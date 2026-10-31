@@ -19,7 +19,7 @@ function Icon({ children }: { children: ReactNode }) {
 const TIPS: { title: string; body: string; icon: ReactNode }[] = [
   {
     title: "Cover up on walks",
-    body: "Ticks wait on tall grass and undergrowth. Keep to the middle of the path, wear long trousers tucked into socks, and choose lighter colours so a tick is easier to see.",
+    body: "Stay on the path, tuck trousers into socks, and wear lighter colours so a tick is easier to spot.",
     icon: (
       <>
         <path d="M8 3l4 2 4-2 3 4-3 2v10H8V9L5 7z" />
@@ -28,7 +28,7 @@ const TIPS: { title: string; body: string; icon: ReactNode }[] = [
   },
   {
     title: "Check skin and pets the same day",
-    body: "Look at ankles, behind knees, the groin, the scalp, and under a dog's collar and between the toes. A tick is easier to remove before it has been attached for long.",
+    body: "Check ankles, knees, groin, scalp, and a dog's collar and toes the day you get home.",
     icon: (
       <>
         <circle cx="11" cy="11" r="7" />
@@ -38,7 +38,7 @@ const TIPS: { title: string; body: string; icon: ReactNode }[] = [
   },
   {
     title: "Remove a tick with a tool",
-    body: "Use a tick remover or fine tweezers. Grip close to the skin and pull straight out, slowly. Do not crush the body, burn it, or cover it with oil. Clean the bite afterwards.",
+    body: "Grip close to the skin with a tick tool or fine tweezers and pull straight out. Then clean the bite.",
     icon: (
       <>
         <path d="M14 4l6 6-9 9-4 1 1-4z" />
@@ -48,7 +48,7 @@ const TIPS: { title: string; body: string; icon: ReactNode }[] = [
   },
   {
     title: "Ask a vet about pet protection",
-    body: "Dogs that investigate dens, hedges, and long grass are most at risk. A vet can recommend a product. Do not use a dog product on a cat.",
+    body: "A vet can recommend a product for dogs. Do not use a dog product on a cat.",
     icon: (
       <>
         <circle cx="5.5" cy="12.5" r="1.6" />
@@ -60,8 +60,40 @@ const TIPS: { title: string; body: string; icon: ReactNode }[] = [
     ),
   },
   {
+    title: "Keep grass short",
+    body: "Mow the lawn and clear long grass and leaf litter where ticks wait.",
+    icon: (
+      <>
+        <path d="M4 20h16" />
+        <path d="M7 20V10l3 3 2-6 2 6 3-3v10" />
+      </>
+    ),
+  },
+  {
+    title: "Carry a tick remover",
+    body: "Keep a tick tool in the walking kit so you can remove one the same day.",
+    icon: (
+      <>
+        <path d="M8 4h8v4H8z" />
+        <path d="M10 8v9a2 2 0 0 0 4 0V8" />
+      </>
+    ),
+  },
+  {
+    title: "Shower and check the same day",
+    body: "Shower after a countryside walk. A tick is easier to see on clean skin.",
+    icon: (
+      <>
+        <path d="M8 4h8" />
+        <path d="M12 4v3" />
+        <path d="M9 10c0 4 6 4 6 8" />
+        <path d="M7 14c.4 3 2 5 5 5s4.6-2 5-5" />
+      </>
+    ),
+  },
+  {
     title: "Know when to get help",
-    body: "Speak to a GP or NHS 111 if you feel unwell after a bite, or if a rash spreads. Speak to a vet if a pet is lethargic or the bite looks infected. This is general guidance, not a diagnosis.",
+    body: "Contact a GP or NHS 111 if you feel unwell after a bite. Contact a vet if a pet is lethargic or the bite looks infected.",
     icon: (
       <>
         <circle cx="12" cy="12" r="9" />
@@ -106,12 +138,11 @@ export default function PreventionPage() {
         <span className="eyebrow-badge">Stay safe</span>
         <h1>Prevent tick bites</h1>
         <p className="lede">
-          Most tick bites are avoided by covering skin, checking afterwards, and treating pets with
-          something a vet has recommended.
+          Cover up, check the same day, and ask a vet about protection for pets.
         </p>
       </div>
 
-      <div className="card-grid">
+      <div className="tip-grid">
         {TIPS.map((tip) => (
           <article key={tip.title} className="tip-card">
             <Icon>{tip.icon}</Icon>

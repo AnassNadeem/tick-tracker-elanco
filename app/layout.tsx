@@ -27,13 +27,13 @@ export const metadata: Metadata = {
 };
 
 export const viewport = {
-  themeColor: "#00697f",
+  themeColor: "#0070c8",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${sans.variable} ${serif.variable}`}>
-      <body>
+    <html lang="en" className={`${sans.variable} ${serif.variable}`} data-scroll-behavior="smooth">
+      <body suppressHydrationWarning>
         <Providers>
           <SkipLink />
           <Suspense fallback={null}>

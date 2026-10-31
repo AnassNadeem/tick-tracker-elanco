@@ -1,9 +1,10 @@
 "use client";
 
 import type { MapPoint } from "@/lib/map-points";
-import { divIcon, type LatLngExpression } from "leaflet";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from "react-leaflet";
+import { LeafletContext, createLeafletContext } from "@react-leaflet/core";
+import { Map as LeafletMap, divIcon, type LatLngExpression } from "leaflet";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { Marker, TileLayer, useMap, useMapEvents } from "react-leaflet";
 import Supercluster from "supercluster";
 import { markerHtml } from "./Legend";
 import "leaflet/dist/leaflet.css";
@@ -30,6 +31,86 @@ function MapLabel() {
 
 function prefersReducedMotion() {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+type MapHost = HTMLDivElement & { __tickMap?: LeafletMap; _leaflet_id?: number };
+
+function mapIsLive(map: LeafletMap | undefined, node: HTMLElement): map is LeafletMap {
+  if (!map) return false;
+  try {
+    return map.getContainer() === node;
+  } catch {
+    return false;
+  }
+}
+
+// MapContainer removes its map during React's dev replay and then refuses to
+// create another one. This keeps the same map across that replay, and removes
+// it only after the container has actually left the page.
+function SafeMap({ children }: { children: ReactNode }) {
+  const nodeRef = useRef<HTMLDivElement>(null);
+  const [context, setContext] = useState<ReturnType<typeof createLeafletContext> | null>(null);
+
+  useEffect(() => {
+    const node = nodeRef.current as MapHost | null;
+    if (!node) return;
+
+    const existing = node.__tickMap;
+    let map: LeafletMap;
+    if (mapIsLive(existing, node)) {
+      map = existing;
+    } else {
+      delete node._leaflet_id;
+      map = new LeafletMap(node, {
+        center: [54.6, -3.4],
+        zoom: 6,
+        minZoom: 5,
+        maxZoom: 16,
+        scrollWheelZoom: true,
+      });
+      node.__tickMap = map;
+    }
+    const fit = () => {
+      if (mapIsLive(map, node)) map.invalidateSize();
+    };
+    fit();
+    const frame = window.requestAnimationFrame(fit);
+    setContext(createLeafletContext(map));
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      const current = map;
+      window.setTimeout(() => {
+        if (!node.isConnected && current && mapIsLive(current, node)) {
+          current.remove();
+          delete node.__tickMap;
+          delete node._leaflet_id;
+        }
+      }, 0);
+    };
+  }, []);
+
+  return (
+    <div ref={nodeRef} className="tick-map">
+      {context ? <LeafletContext value={context}>{children}</LeafletContext> : null}
+    </div>
+  );
+}
+
+function FlyToCity({ focus }: { focus: { lat: number; lng: number } | null }) {
+  const map = useMap();
+  const seen = useRef("");
+  useEffect(() => {
+    if (!focus) {
+      seen.current = "";
+      return;
+    }
+    const key = `${focus.lat.toFixed(4)},${focus.lng.toFixed(4)}`;
+    if (seen.current === key) return;
+    seen.current = key;
+    map.flyTo([focus.lat, focus.lng], 11, { animate: !prefersReducedMotion() });
+  }, [focus, map]);
+  return null;
 }
 
 function isCluster(properties: MapPoint | ClusterProps): properties is ClusterProps {
@@ -175,32 +256,37 @@ export default function TickMap({
   selectedId,
   onSelect,
   onBounds,
+  focus = null,
 }: {
   points: MapPoint[];
   selectedId: string | null;
   onSelect: (id: string) => void;
   onBounds: (bounds: { north: number; south: number; east: number; west: number }) => void;
+  focus?: { lat: number; lng: number } | null;
 }) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return <div className="tick-map map-loading">Loading the map…</div>;
+  }
+
   return (
-    <MapContainer
-      center={[54.6, -3.4]}
-      zoom={6}
-      minZoom={5}
-      maxZoom={16}
-      className="tick-map"
-      scrollWheelZoom
-    >
+    <SafeMap>
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
       <MapLabel />
+      <FlyToCity focus={focus} />
       <SightingMarkers
         points={points}
         selectedId={selectedId}
         onSelect={onSelect}
         onBounds={onBounds}
       />
-    </MapContainer>
+    </SafeMap>
   );
 }

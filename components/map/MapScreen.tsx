@@ -4,6 +4,7 @@ import FilterBar from "@/components/map/FilterBar";
 import Legend from "@/components/map/Legend";
 import SightingPanel from "@/components/map/SightingPanel";
 import { useDebounced } from "@/components/useDebounced";
+import { CITIES } from "@/lib/cities";
 import { filtersFromParams, filtersToQuery, pageQuery, type MapFilters } from "@/lib/view";
 import { toMapPoints } from "@/lib/map-points";
 import type { SightingListResponse, SpeciesDto } from "@/lib/types";
@@ -16,6 +17,10 @@ const TickMap = dynamic(() => import("./TickMap"), {
   ssr: false,
   loading: () => <div className="map-loading">Loading the map…</div>,
 });
+
+function clamp(value: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, value));
+}
 
 type HealthResponse = {
   db: "ok" | "error";
@@ -49,10 +54,16 @@ export default function MapScreen() {
     queryFn: async () => {
       const params = filtersToQuery(debouncedFilters);
       if (debouncedBounds) {
-        params.set("north", String(debouncedBounds.north));
-        params.set("south", String(debouncedBounds.south));
-        params.set("east", String(debouncedBounds.east));
-        params.set("west", String(debouncedBounds.west));
+        const north = clamp(debouncedBounds.north, -90, 90);
+        const south = clamp(debouncedBounds.south, -90, 90);
+        const east = clamp(debouncedBounds.east, -180, 180);
+        const west = clamp(debouncedBounds.west, -180, 180);
+        if (south <= north && west <= east) {
+          params.set("north", String(north));
+          params.set("south", String(south));
+          params.set("east", String(east));
+          params.set("west", String(west));
+        }
       }
       const response = await fetch(`/api/sightings?${params.toString()}`);
       if (!response.ok) throw new Error("Could not load sightings");
@@ -82,6 +93,10 @@ export default function MapScreen() {
     () => toMapPoints(sightingsQuery.data?.data ?? []),
     [sightingsQuery.data],
   );
+  const focus = useMemo(() => {
+    const city = CITIES.find((item) => item.name === filters.region);
+    return city ? { lat: city.lat, lng: city.lng } : null;
+  }, [filters.region]);
 
   return (
     <div className="map-shell">
@@ -109,6 +124,7 @@ export default function MapScreen() {
           selectedId={selectedId}
           onSelect={setSelectedId}
           onBounds={setBounds}
+          focus={focus}
         />
         <Legend />
         {selectedId ? (

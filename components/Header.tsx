@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -16,22 +17,15 @@ export default function Header() {
   return (
     <header className="site-header">
       <Link href="/" className="brand" aria-label="Tick Tracker home">
-        <span className="brand-mark" aria-hidden="true">
-          <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
-            <rect
-              x="13"
-              y="0.5"
-              width="17"
-              height="17"
-              rx="3"
-              transform="rotate(45 13 0.5)"
-              fill="currentColor"
-            />
-            <circle cx="13" cy="13" r="3.4" fill="#fff" />
-          </svg>
-        </span>
+        <Image
+          src="/brand/elanco-logo.png"
+          alt=""
+          width={472}
+          height={234}
+          className="brand-logo"
+          priority
+        />
         <span className="brand-text">
-          <span className="eyebrow">Elanco · UK tick sightings</span>
           <span className="wordmark">Tick Tracker</span>
         </span>
       </Link>

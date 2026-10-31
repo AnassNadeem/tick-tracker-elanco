@@ -1,25 +1,25 @@
 @import "tailwindcss";
 
 /* ------------------------------------------------------------------ */
-/* Elanco-inspired theme tokens                                       */
-/* Deep teal primary + warm coral accent, clean white surfaces.       */
+/* Elanco theme tokens                                                */
+/* Logo blue #0070C8 on white. Red, amber and green stay for risk.    */
 /* ------------------------------------------------------------------ */
 :root {
-  --bg: #eef3f4;
-  --bg-tint: #e3edee;
+  --bg: #f5f8fb;
+  --bg-tint: #e8f1fa;
   --card: #ffffff;
-  --ink: #0f2a31;
-  --muted: #52666d;
-  --line: #d7e1e3;
+  --ink: #0c2744;
+  --muted: #4d6478;
+  --line: #d4e2ef;
 
-  --brand: #00697f;
-  --brand-dark: #004a5a;
-  --brand-darker: #063640;
-  --brand-tint: #e0eef1;
+  --brand: #0070c8;
+  --brand-dark: #00579c;
+  --brand-darker: #003a6b;
+  --brand-tint: #e6f2fb;
 
-  --accent: #e4572e;
-  --accent-dark: #c43f1a;
-  --accent-tint: #fcebe4;
+  --accent: #0070c8;
+  --accent-dark: #00579c;
+  --accent-tint: #e6f2fb;
 
   --warn: #8a5a00;
   --warn-bg: #fff4d6;
@@ -31,13 +31,13 @@
   /* Species marker colours (redundant with shape + letter) */
   --sp-fox: #0e7c86;
   --sp-marsh: #2d6cb5;
-  --sp-passerine: #e4572e;
+  --sp-passerine: #d4532b;
   --sp-rodent: #c9820b;
   --sp-tree: #7a4fb0;
 
-  --shadow-sm: 0 1px 2px rgba(10, 43, 49, 0.06), 0 2px 6px rgba(10, 43, 49, 0.05);
-  --shadow-md: 0 8px 24px rgba(10, 43, 49, 0.1);
-  --shadow-lg: 0 18px 50px rgba(10, 43, 49, 0.16);
+  --shadow-sm: 0 1px 2px rgba(8, 40, 80, 0.06), 0 2px 6px rgba(8, 40, 80, 0.05);
+  --shadow-md: 0 8px 24px rgba(8, 40, 80, 0.1);
+  --shadow-lg: 0 18px 50px rgba(8, 40, 80, 0.16);
   --radius: 0.9rem;
 }
 
@@ -212,14 +212,11 @@ a {
   text-decoration: none;
 }
 
-.brand-mark {
-  display: grid;
-  place-items: center;
-  width: 2.2rem;
-  height: 2.2rem;
+.brand-logo {
+  display: block;
+  height: 2.35rem;
+  width: auto;
   flex: none;
-  color: var(--accent);
-  transform: rotate(0deg);
 }
 
 .brand-text {
@@ -285,7 +282,14 @@ a {
 .site-footer {
   margin-top: 3rem;
   background: var(--brand-darker);
-  color: #d6e6ea;
+  color: #d6e8f5;
+}
+
+.footer-logo {
+  display: block;
+  height: 2rem;
+  width: auto;
+  margin-bottom: 0.75rem;
 }
 
 .footer-grid {
@@ -305,7 +309,7 @@ a {
   margin: 0.6rem 0 0;
   font-size: 0.92rem;
   max-width: 24rem;
-  color: #a9c6cd;
+  color: #b7cfe0;
 }
 
 .footer-col h3 {
@@ -313,7 +317,7 @@ a {
   font-size: 0.78rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: #7fa7b0;
+  color: #8eb0c8;
   margin: 0 0 0.75rem;
 }
 
@@ -327,7 +331,7 @@ a {
 
 .footer-col a {
   text-decoration: none;
-  color: #d6e6ea;
+  color: #d6e8f5;
   font-size: 0.95rem;
 }
 
@@ -350,7 +354,7 @@ a {
   gap: 1rem;
   flex-wrap: wrap;
   font-size: 0.82rem;
-  color: #8fb3bb;
+  color: #9ec0d4;
 }
 
 .footer-disclaimer {
@@ -429,6 +433,32 @@ a {
   margin-top: 1.5rem;
 }
 
+.species-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 1.35rem;
+  margin-top: 1.5rem;
+}
+
+.species-grid .species-card {
+  grid-column: span 2;
+}
+
+.species-grid .species-card:nth-child(4) {
+  grid-column: 2 / span 2;
+}
+
+.species-grid .species-card:nth-child(5) {
+  grid-column: 4 / span 2;
+}
+
+.tip-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.15rem;
+  margin-top: 1.5rem;
+}
+
 .card,
 .panel {
   background: var(--card);
@@ -475,8 +505,8 @@ a {
   position: relative;
   overflow: hidden;
   background:
-    radial-gradient(1200px 500px at 80% -10%, rgba(0, 105, 127, 0.18), transparent 60%),
-    linear-gradient(160deg, #f2f8f9 0%, #e6f1f2 100%);
+    radial-gradient(1200px 500px at 80% -10%, rgba(0, 112, 200, 0.16), transparent 60%),
+    linear-gradient(160deg, #f7fbfe 0%, #e7f2fb 100%);
 }
 
 .hero-inner {
@@ -548,6 +578,109 @@ a {
   color: var(--muted);
 }
 
+.map-preview-section {
+  padding-top: 2.5rem;
+}
+
+.map-preview-split {
+  display: grid;
+  grid-template-columns: 1.35fr 0.85fr;
+  gap: 1.5rem;
+  align-items: stretch;
+}
+
+.map-preview-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  min-width: 0;
+}
+
+.map-preview-frame {
+  height: 22rem;
+  border-radius: 1rem;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-md);
+  background: var(--bg-tint);
+}
+
+.map-preview-frame .tick-map,
+.map-preview-frame .map-loading {
+  min-height: 0;
+  height: 100%;
+}
+
+.insight-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1.35rem 1.4rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.insight-kicker {
+  margin: 0 0 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--brand);
+}
+
+.insight-total {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.insight-total strong {
+  font-family: var(--font-fraunces), serif;
+  font-size: 2.4rem;
+  line-height: 1;
+  color: var(--brand-darker);
+}
+
+.insight-total span,
+.insight-span {
+  color: var(--muted);
+}
+
+.insight-span {
+  margin: 0;
+}
+
+.insight-panel h3 {
+  margin: 0 0 0.45rem;
+  font-size: 1.05rem;
+}
+
+.insight-cities {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.4rem;
+}
+
+.insight-cities li {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--line);
+  font-weight: 650;
+}
+
+.insight-cities li span:last-child {
+  color: var(--brand);
+  font-variant-numeric: tabular-nums;
+}
+
 /* Stat band */
 .stat-band {
   background: var(--brand-darker);
@@ -569,11 +702,11 @@ a {
   font-family: var(--font-fraunces), serif;
   font-size: 2.4rem;
   line-height: 1;
-  color: #ffd9cc;
+  color: #ffffff;
 }
 
 .stat-band .stat span {
-  color: #a9c6cd;
+  color: #d6e8f5;
   font-size: 0.95rem;
 }
 
@@ -691,7 +824,7 @@ a {
 .cta-band p {
   margin: 0 auto 1.4rem;
   max-width: 34rem;
-  color: #d6e6ea;
+  color: #d6e8f5;
 }
 
 /* ------------------------------------------------------------------ */
@@ -715,7 +848,7 @@ a {
 
 .species-media {
   position: relative;
-  aspect-ratio: 3 / 2;
+  aspect-ratio: 16 / 10;
   overflow: hidden;
   background: var(--bg-tint);
 }
@@ -754,10 +887,10 @@ a {
 }
 
 .species-body {
-  padding: 1.1rem 1.2rem 1.3rem;
+  padding: 1.35rem 1.4rem 1.5rem;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.55rem;
   flex: 1;
 }
 
@@ -770,7 +903,7 @@ a {
 
 .species-body h2 {
   margin: 0;
-  font-size: 1.25rem;
+  font-size: 1.4rem;
 }
 
 .species-tips {
@@ -875,7 +1008,8 @@ a {
 .map-shell {
   display: flex;
   flex-direction: column;
-  min-height: calc(100dvh - 3.8rem);
+  height: calc(100dvh - 5.6rem);
+  min-height: 36rem;
 }
 
 .filter-bar {
@@ -893,6 +1027,12 @@ a {
   flex-wrap: wrap;
   gap: 0.6rem 0.8rem;
   align-items: end;
+}
+
+.filter-fields > div {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
 }
 
 .filter-fields label {
@@ -1020,13 +1160,12 @@ a {
 .map-stage {
   position: relative;
   flex: 1;
-  min-height: 28rem;
+  min-height: 0;
 }
 
 .tick-map,
 .map-loading {
   height: 100%;
-  min-height: 28rem;
   width: 100%;
 }
 
@@ -1120,7 +1259,7 @@ a {
 }
 
 .tick-marker[data-recent="true"] {
-  box-shadow: 0 0 0 3px #ffd9cc;
+  box-shadow: 0 0 0 3px #b9dcfa;
 }
 
 .tick-marker[data-selected="true"] {
@@ -1145,11 +1284,11 @@ a {
   z-index: 400;
   left: 0.75rem;
   bottom: 1.5rem;
-  width: min(19rem, calc(100% - 1.5rem));
+  width: min(14.5rem, calc(100% - 1.5rem));
   background: rgba(255, 255, 255, 0.96);
   border: 1px solid var(--line);
   border-radius: 0.8rem;
-  padding: 0.8rem 0.9rem;
+  padding: 0.55rem 0.7rem;
   font-size: 0.82rem;
   box-shadow: var(--shadow-md);
 }
@@ -1165,7 +1304,7 @@ a {
   flex-wrap: wrap;
   gap: 0.35rem 0.7rem;
   list-style: none;
-  margin: 0 0 0.5rem;
+  margin: 0;
   padding: 0;
 }
 
@@ -1181,18 +1320,90 @@ a {
   font-size: 0.6rem;
 }
 
-.legend-note {
-  margin: 0;
+.report-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.report-page h1 {
+  width: 100%;
+  text-align: center;
+}
+
+.report-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.85rem 1rem;
+  width: min(44rem, 100%);
+  margin: 1.25rem auto 0;
+}
+
+.report-form .field-span,
+.report-form > button {
+  grid-column: 1 / -1;
+}
+
+.report-form .field input,
+.report-form .field select,
+.report-form .field textarea {
+  width: 100%;
+  min-width: 0;
+}
+
+.file-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.file-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.5rem;
+  padding: 0.55rem 1.15rem;
+  border-radius: 999px;
+  background: var(--brand);
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+}
+
+.file-button:hover {
+  background: var(--brand-dark);
+}
+
+.file-name {
   color: var(--muted);
-  line-height: 1.4;
+  font-size: 0.95rem;
+}
+
+.report-form .file-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  min-width: 0;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.report-form .pin-map {
+  height: 12rem;
 }
 
 .selected-chip {
   position: absolute;
   z-index: 400;
   top: 0.75rem;
-  left: 0.75rem;
-  right: 0.75rem;
+  left: 4.6rem;
+  right: auto;
   margin: 0;
   background: white;
   border: 1px solid var(--line);
@@ -1215,7 +1426,7 @@ a {
 /* ------------------------------------------------------------------ */
 .sighting-panel {
   position: absolute;
-  z-index: 500;
+  z-index: 1100;
   top: 0.75rem;
   right: 0.75rem;
   width: min(25rem, calc(100% - 1.5rem));
@@ -1275,7 +1486,7 @@ a {
 }
 
 .panel-hero .latin {
-  color: #d6e6ea;
+  color: #d6e8f5;
   margin: 0;
   font-size: 0.9rem;
 }
@@ -1368,7 +1579,7 @@ a {
 
 .actions a:hover,
 .actions button:hover {
-  background: #cfe6eb;
+  background: #d4e9f8;
 }
 
 .actions .act-report {
@@ -1533,6 +1744,12 @@ a {
 /* ------------------------------------------------------------------ */
 /* Responsive                                                        */
 /* ------------------------------------------------------------------ */
+@media (max-width: 980px) {
+  .tip-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 @media (max-width: 860px) {
   .hero-inner {
     grid-template-columns: 1fr;
@@ -1544,6 +1761,36 @@ a {
 
   .footer-grid {
     grid-template-columns: 1fr 1fr;
+  }
+
+  .map-preview-split {
+    grid-template-columns: 1fr;
+  }
+
+  .map-preview-frame {
+    height: 16rem;
+  }
+
+  .species-grid,
+  .species-grid .species-card,
+  .species-grid .species-card:nth-child(4),
+  .species-grid .species-card:nth-child(5) {
+    grid-column: auto;
+    grid-template-columns: 1fr;
+  }
+
+  .species-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .tip-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .report-form {
+    grid-template-columns: 1fr;
   }
 }
 
