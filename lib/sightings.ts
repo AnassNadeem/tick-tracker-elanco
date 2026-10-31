@@ -71,12 +71,15 @@ function boundsWhere(query: SightingQuery): Prisma.SightingWhereInput | null {
   const south = query.south - pad;
   const east = query.east + pad;
   const west = query.west - pad;
+  const inView = { lat: { gte: south, lte: north }, lng: { gte: west, lte: east } };
   return {
     OR: [
-      { lat: { gte: south, lte: north }, lng: { gte: west, lte: east } },
+      inView,
       {
-        lat: null,
-        region: { lat: { gte: south, lte: north }, lng: { gte: west, lte: east } },
+        AND: [
+          { OR: [{ lat: null }, { lng: null }] },
+          { region: inView },
+        ],
       },
     ],
   };
