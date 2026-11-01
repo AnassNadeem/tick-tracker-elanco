@@ -4,7 +4,7 @@ A UK tick-sighting map, reporting form, and short guides. Built by **Anass Nadee
 
 **Live app:** [https://tick-tracker-elanco.vercel.app](https://tick-tracker-elanco.vercel.app)
 
-The longer write-up is [docs/technical-documentation.md](docs/technical-documentation.md). The walkthrough script is [docs/video-script.md](docs/video-script.md).
+The longer write-up is [docs/technical-documentation.md](docs/technical-documentation.md).
 
 ## Overview
 
@@ -129,7 +129,7 @@ prisma/         schema and migration
 tests/          checks that do not need a database
 data/           offline snapshot of the upstream feed
 public/images/  guide and landing photos, with attribution
-docs/           technical documentation and the walkthrough script
+docs/           technical documentation and screenshots
 .github/        CI workflow
 ```
 
@@ -215,9 +215,3 @@ Accounts, moderation, and the optional machine-learning task are not in this sub
 ## Disclaimer
 
 This is not an official Elanco product. Nothing in the species guide, the prevention page, or a sighting report is veterinary or medical advice. Severity on imported rows follows the species guide. It is not a clinical assessment of that sighting.
-
-## Walkthrough
-
-Record from the live site or from a seeded local app. The spoken script is [docs/video-script.md](docs/video-script.md). Add the unlisted video link here before submitting:
-
-- Video: _not recorded yet_
