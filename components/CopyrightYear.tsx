@@ -1,13 +1,21 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 
-// Rendered on the client so the layout can still be prerendered/cached
-// (Cache Components rejects `new Date()` during prerender).
+function emptySubscribe() {
+  return () => {};
+}
+
+function clientYear() {
+  return new Date().getFullYear();
+}
+
+function serverYear() {
+  return null;
+}
+
+// The year is read in the browser. Cache Components rejects `new Date()` during prerender.
 export default function CopyrightYear() {
-  const [year, setYear] = useState<number | null>(null);
-  useEffect(() => {
-    setYear(new Date().getFullYear());
-  }, []);
+  const year = useSyncExternalStore(emptySubscribe, clientYear, serverYear);
   return <>{year ?? ""}</>;
 }

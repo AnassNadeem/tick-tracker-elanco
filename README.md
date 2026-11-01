@@ -4,11 +4,30 @@ A UK tick-sighting map, reporting form, and short guides. Built by **Anass Nadee
 
 **Live app:** [https://tick-tracker-elanco.vercel.app](https://tick-tracker-elanco.vercel.app)
 
-This is a placement project. It is not an official Elanco product, and nothing in it is veterinary or medical advice.
+The longer write-up is [docs/technical-documentation.md](docs/technical-documentation.md). The walkthrough script is [docs/video-script.md](docs/video-script.md).
 
-The submission write-up is [docs/technical-documentation.md](docs/technical-documentation.md). The walkthrough script is [docs/video-script.md](docs/video-script.md).
+## Overview
 
-## Screenshots
+Tick Tracker shows where ticks have been reported across 14 UK cities, explains the five species in the task dataset, and accepts a new sighting. The browser reads our database. It does not call the Elanco API on each page load.
+
+This is a placement project. It is not an official Elanco product.
+
+## Project objectives
+
+- Map the assigned tick-sighting dataset and keep the app usable when that API is down.
+- Let someone filter the map, open a sighting, and submit their own report with validation.
+- Explain the species in the feed and give practical prevention steps.
+- Show seasonal activity by city and year, including a clearly labelled local extension for 2025 and 2026.
+
+## Key features
+
+- UK map with species encoded by shape, letter, and colour. Recent sightings carry a ring. Clusters split as you zoom.
+- Filters for date, species, severity, city, and the newest 14 days in the current data.
+- Sighting panel with the record, recent activity in that city, and actions to report, get directions, or share.
+- Report form. Date, time, city, and species are required. Severity, a place name, a map pin, a note, and a photo are optional. A missing severity or photo warns you and still saves.
+- Species guide, prevention page, and a monthly activity chart.
+
+## Application experience
 
 ![Tick Tracker home page](docs/screenshots/home.png)
 
@@ -16,52 +35,13 @@ The home page: report a sighting, or open the map.
 
 ![UK sightings map with city clusters](docs/screenshots/map.png)
 
-The map. Imported sightings have no coordinates, so each cluster sits on a city centre. Shape and letter are the species. Zooming splits a cluster into markers.
+The map. Imported sightings have no coordinates, so each cluster sits on a city centre. Zooming splits a cluster into markers without asking the server again.
 
 ![Sighting report form](docs/screenshots/report.png)
 
-The report form. Date, time, city, and species are required. Severity, a place name, a map pin, a note, and a photo are optional.
+The report form. A pin is optional. If you do not drop one, the sighting is stored against the city centre.
 
-## What it does
-
-- Maps the Elanco task dataset, plus a local extension for 2025 and 2026, plus any report you submit.
-- Filters by date, species, severity, city, and the latest 14 days of data.
-- Opens a sighting panel with the record, recent activity in that city, and actions to report, get directions, or share.
-- Accepts a new sighting with client and server validation. A missing severity or photo warns you and still saves.
-- Explains the five species in the dataset, lists prevention steps, and charts sightings by month, city, and year.
-
-## How the data works
-
-The browser never calls the Elanco API. A separate ingest step loads the feed into Postgres. Pages and the map read that database, so a dead upstream API does not take the site down.
-
-| Source | What it is | Coordinates | Severity |
-| --- | --- | --- | --- |
-| `upstream` | 1,000 records from `GET https://dev-task.elancoapps.com/data/tick-sightings` (2012–2024). Each row is an id, a timestamp, one of 14 cities, a species, and a latin name. | None. The map uses the city-centre point stored on the city. | Set on ingest from that species' risk level in the guide. The feed itself has no severity. |
-| `extended` | 150 local rows so 2025 and 2026 are not empty. 2026 stops at 30 October. Counts follow the same summer peak as the imported years. Ids are prefixed `local-`. | Same as imported rows: city centre only. | Same rule: the species risk level. |
-| `user_submitted` | A report from the form. | City centre, unless the person drops a pin. | Whatever they choose. Blank is stored as unrated. |
-
-Pins for imported rows are spread slightly around the city centre in the browser so they do not stack. That offset is not stored and it is not a field location. The sighting panel says when a point is only the city centre.
-
-If the live feed is down, `npm run db:setup` and `npm run ingest` fall back to `data/upstream-snapshot.json`. Re-running ingest updates existing rows by upstream id, so it does not create duplicates.
-
-Photos are resized to a JPEG of at most 1600px and stored in Supabase Storage. The database keeps the URL only. Without storage credentials, the same writer saves the file under `public/uploads`.
-
-## Tech stack
-
-| Layer | Choice |
-| --- | --- |
-| App | Next.js 16 (App Router), React 19, TypeScript |
-| Styling | Tailwind CSS 4, one global stylesheet |
-| API | Route handlers in `app/api` |
-| Database | Postgres on Supabase, accessed with Prisma |
-| Photos | Supabase Storage, resized with `sharp` |
-| Map | Leaflet, react-leaflet, Supercluster |
-| Charts | Recharts |
-| Validation | Zod, shared by the form and `POST /api/sightings` |
-| Data fetching | TanStack Query |
-| Hosting | Vercel, with a daily cron that re-runs ingest |
-
-## How it fits together
+## Technical architecture
 
 ```mermaid
 flowchart TD
@@ -81,13 +61,81 @@ flowchart TD
   ingest -->|upsert on upstream id| db
 ```
 
-One deployable app. The UI and the API live in the same Next.js project, so there is no second service and no CORS boundary. Ingest is not part of a page load. It runs from `npm run db:setup`, from `npm run ingest`, and from `GET /api/cron/ingest` on a daily schedule.
+One Next.js app serves the pages and the API, so there is no second service and no CORS boundary. Ingest is not part of a page load. It runs from `npm run db:setup`, from `npm run ingest`, and from `GET /api/cron/ingest` on a daily schedule.
 
 Region and trend numbers are `GROUP BY` queries on each request. At this volume that is cheaper than maintaining summary tables.
 
-The full design, the decisions, and the route list are in [docs/technical-documentation.md](docs/technical-documentation.md).
+The map loads every row that matches the current filters, then clusters those points in the browser. Zoom and pan do not refetch.
 
-## Run it locally
+## Technology stack
+
+| Layer | Choice |
+| --- | --- |
+| App | Next.js 16 (App Router), React 19, TypeScript |
+| Styling | Tailwind CSS 4, one global stylesheet |
+| API | Route handlers in `app/api` |
+| Database | Postgres on Supabase, accessed with Prisma |
+| Photos | Supabase Storage, resized with `sharp` |
+| Map | Leaflet, react-leaflet, Supercluster |
+| Charts | Recharts |
+| Validation | Zod, shared by the form and `POST /api/sightings` |
+| Data fetching | TanStack Query |
+| Hosting | Vercel, with a daily cron that re-runs ingest |
+| Checks | ESLint, `tsc`, and `node --test` in GitHub Actions |
+
+## Data sources and methodology
+
+Checked against the live API on 1 November 2026. `GET https://dev-task.elancoapps.com/data/tick-sightings` returned 1,000 records, and every record matched `data/upstream-snapshot.json`.
+
+The feed's species names, copied unchanged into the guide:
+
+| Common name | Latin name in the feed |
+| --- | --- |
+| Fox/badger tick | Ixodes canisuga |
+| Marsh tick | Ixodes apronophorus |
+| Passerine tick | Dermacentor frontalis |
+| Southern rodent tick | Ixodes acuminatus |
+| Tree-hole tick | Ixodes arboricola |
+
+Those pairs are closed: each common name has one Latin name, and the guide does not rename either. The identification text on the species page is ours.
+
+| Source | What it is | Years | Coordinates | Severity |
+| --- | --- | --- | --- | --- |
+| `upstream` | 1,000 records from the Elanco API. Each row is an id, a timestamp, one of 14 cities, a species, and a Latin name. | 3 January 2012 through 30 December 2024. 2012 is present (82 records). There is no 2025 or 2026 in the API. | None. The map uses the city-centre point stored on the city. | Set on ingest from that species' risk level in the guide. The feed itself has no severity. |
+| `extended` | 150 local rows so the activity chart is not empty for the current years. Ids are prefixed `local-`. | 2025 is a full year (80 rows). 2026 is 1 January through 30 October (70 rows). Counts follow the same summer peak as the imported years. | Same as imported rows: city centre only. | Same rule: the species risk level. |
+| `user_submitted` | A report from the form. | Whatever date the person enters. | City centre, unless they drop a pin. | Whatever they choose. Blank is stored as unrated. |
+
+Pins for imported and extended rows are spread slightly around the city centre in the browser so they do not stack. That offset is not stored and it is not a field location. The sighting panel says when a point is only the city centre, and it says whether the row came from the API, the local extension, or a community report.
+
+If the live feed is down, `npm run db:setup` and `npm run ingest` fall back to `data/upstream-snapshot.json`. Re-running ingest updates existing rows by upstream id, so it does not create duplicates.
+
+Photos are resized to a JPEG of at most 1600px and stored in Supabase Storage. The database keeps the URL only. Without storage credentials, the same writer saves the file under `public/uploads`.
+
+## Accessibility
+
+- A skip link goes to the main content. Pages use one `h1`, labelled controls, and visible focus.
+- Map markers are keyboard reachable. Enter opens the sighting dialog. Escape closes it.
+- Species is not encoded by colour alone: each marker also has a shape and a letter, and the legend repeats them.
+- The activity chart has a data table of the same numbers.
+- Motion is reduced when the operating system asks for it.
+
+## Project structure
+
+```
+app/            pages and /api routes
+components/     map, report form, landing, chart
+lib/            database, ingest, validation, queries
+prisma/         schema and migration
+tests/          checks that do not need a database
+data/           offline snapshot of the upstream feed
+public/images/  guide and landing photos, with attribution
+docs/           technical documentation and the walkthrough script
+.github/        CI workflow
+```
+
+Working notes from the build (briefs, phase summaries, early wireframes) stay off this repository.
+
+## Getting started
 
 Node.js 20 or newer.
 
@@ -117,19 +165,56 @@ Open [http://localhost:3000](http://localhost:3000).
 
 `npm run db:setup` applies the migration and loads 14 cities, 5 species, the upstream sightings, and the 2025–2026 extension. `npm run ingest` refreshes sightings without reseeding the reference tables.
 
-## Repository layout
-
-```
-app/            pages and /api routes
-components/     map, report form, landing, chart
-lib/            database, ingest, validation, queries
-prisma/         schema and migration
-data/           offline snapshot of the upstream feed
-public/images/  guide and landing photos, with attribution
-docs/           technical documentation and the walkthrough script
+```bash
+npm test
+npm run lint
+npm run typecheck
 ```
 
-Working notes from the build (briefs, phase summaries, early wireframes) stay off this repository.
+## Using the application
+
+1. Open the map and filter by date, species, severity, or city. "Recent" keeps the newest 14 days present in the data.
+2. Select a marker. The panel names the species, says whether the row is from the Elanco API or the local extension, and lists other sightings in that city.
+3. Use Report a sighting for a new record. The city is required. A map pin is optional.
+4. Read the species guide and the prevention page before treating a chart year as field data. 2025 and 2026 on the activity page are the local extension.
+
+## Data handling and resilience
+
+- Pages and the map read Postgres. A dead upstream API does not take the site down. The map shows a banner when the live health check fails.
+- Ingest skips incomplete rows and unknown species or cities, and it upserts on the upstream id.
+- The report endpoint validates with the same Zod schema as the form. Invalid input returns field errors. A missing optional photo or severity returns a warning and still saves.
+- Uploaded images are resized before they are stored. The database stores the URL only.
+
+## Requirements coverage
+
+| Area | Where it lives |
+| --- | --- |
+| Map, markers, clustering, filters | `/map` |
+| Sighting detail, city timeline, report / directions / share | Marker panel |
+| Species guide, prevention, seasonal chart | `/species`, `/prevention`, `/activity` |
+| Report form, shared validation, optional photo | `/report` and `POST /api/sightings` |
+| Ingest, search, region totals, trends, upstream failure | `lib/ingest.ts`, `app/api` |
+| Phone layout | Header menu, stacked filters, full-width form, bottom sighting panel |
+
+Accounts, moderation, and the optional machine-learning task are not in this submission.
+
+## Future improvements
+
+- Replace the 2025–2026 extension if Elanco publishes those years.
+- Moderate public reports before they appear on the map.
+- Store a real coordinate only when a person drops a pin, which the form already does, and say so in any export.
+- Page the map query again if the dataset grows well past a few thousand rows.
+
+## Acknowledgements
+
+- Anass Nadeem, for the Elanco Placement Program technical task.
+- Elanco's dev-task API for the 1,000 sightings.
+- OpenStreetMap contributors for the map tiles.
+- Photo credits are listed in [public/images/ATTRIBUTION.md](public/images/ATTRIBUTION.md).
+
+## Disclaimer
+
+This is not an official Elanco product. Nothing in the species guide, the prevention page, or a sighting report is veterinary or medical advice. Severity on imported rows follows the species guide. It is not a clinical assessment of that sighting.
 
 ## Walkthrough
 

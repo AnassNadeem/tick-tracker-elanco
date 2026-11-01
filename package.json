@@ -7,6 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "test": "node --import tsx --test tests/species-catalog.test.ts tests/extend-plan.test.ts tests/source.test.ts tests/validators.test.ts tests/jitter.test.ts",
     "db:setup": "prisma migrate deploy && prisma db seed",
     "db:seed": "prisma db seed",
     "ingest": "tsx scripts/ingest.ts"
