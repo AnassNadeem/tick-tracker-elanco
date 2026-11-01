@@ -4,7 +4,11 @@ A UK tick-sighting map, reporting form, and short guides. Built by **Anass Nadee
 
 **Live app:** [https://tick-tracker-elanco.vercel.app](https://tick-tracker-elanco.vercel.app)
 
+**Demo Video** [https://youtu.be/9CfcwDCLeMg](https://youtu.be/9CfcwDCLeMg)
+
 The longer write-up is [docs/technical-documentation.md](docs/technical-documentation.md).
+
+
 
 ## Overview
 
