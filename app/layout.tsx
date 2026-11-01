@@ -4,7 +4,7 @@ import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import Providers from "@/components/Providers";
 import SkipLink from "@/components/SkipLink";
-import { Suspense } from "react";
+import { Suspense, type ReactNode } from "react";
 import "./globals.css";
 
 const sans = Source_Sans_3({
@@ -30,7 +30,7 @@ export const viewport = {
   themeColor: "#0070c8",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={`${sans.variable} ${serif.variable}`} data-scroll-behavior="smooth">
       <body suppressHydrationWarning>

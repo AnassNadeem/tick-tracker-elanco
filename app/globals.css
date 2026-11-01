@@ -1851,10 +1851,6 @@ a {
     grid-template-columns: 1fr;
   }
 
-  .hero-media {
-    order: -1;
-  }
-
   .footer-grid {
     grid-template-columns: 1fr 1fr;
   }
