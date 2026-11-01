@@ -8,6 +8,7 @@ import type {
   Severity,
   TimelineEntry,
 } from "./types";
+import { normalizeSource } from "./source";
 import { parseDateBound, type SightingQuery } from "./validators";
 
 const SEVERITY_VALUES = new Set<Severity>(["low", "medium", "high"]);
@@ -25,7 +26,7 @@ function asSeverity(value: string | null): Severity | null {
 }
 
 function asSource(value: string): SightingSource {
-  return value === "user_submitted" ? "user_submitted" : "upstream";
+  return normalizeSource(value);
 }
 
 export function toSightingDto(row: SightingRecord): SightingDto {

@@ -18,7 +18,7 @@ export function markerHtml(input: {
 }) {
   const mark = speciesMark(input.speciesSlug);
   const severity = input.severity ?? "unrated";
-  return `<span class="tick-marker" data-species="${input.speciesSlug}" data-shape="${mark.shape}" data-severity="${severity}" data-recent="${input.recent}" data-selected="${input.selected}"><span>${mark.letter}</span></span>`;
+  return `<span class="tick-pin"><span class="tick-marker" data-species="${input.speciesSlug}" data-shape="${mark.shape}" data-severity="${severity}" data-recent="${input.recent}" data-selected="${input.selected}"><span>${mark.letter}</span></span></span>`;
 }
 
 export default function Legend() {

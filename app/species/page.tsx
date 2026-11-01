@@ -27,6 +27,10 @@ export default function SpeciesPage() {
     <div className="page">
       <div className="page-header">
         <h1>Know your ticks</h1>
+        <p className="lede">
+          These five common names and Latin names are copied from the Elanco feed. The short
+          descriptions are ours.
+        </p>
       </div>
 
       <div className="species-grid">

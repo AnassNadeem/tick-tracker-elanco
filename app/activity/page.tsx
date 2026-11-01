@@ -11,7 +11,10 @@ export default function ActivityPage() {
       <div className="page-header">
         <span className="eyebrow-badge">Trends</span>
         <h1>Seasonal activity</h1>
-        <p className="lede">Monthly sightings by city and year.</p>
+        <p className="lede">
+          Monthly sightings by city and year. 2012–2024 are the Elanco feed. 2025 and 2026 are a
+          local extension so those years are not empty.
+        </p>
       </div>
       <SeasonalChart />
     </div>

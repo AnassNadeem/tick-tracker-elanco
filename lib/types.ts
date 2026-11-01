@@ -2,7 +2,7 @@ export const SEVERITIES = ["low", "medium", "high"] as const;
 
 export type Severity = (typeof SEVERITIES)[number];
 
-export type SightingSource = "upstream" | "user_submitted";
+export type SightingSource = "upstream" | "extended" | "user_submitted";
 
 export type SpeciesDto = {
   id: string;

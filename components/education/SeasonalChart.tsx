@@ -69,12 +69,17 @@ export default function SeasonalChart() {
       <h2>
         Sightings in {place}, {year}
       </h2>
+      <p className="help">
+        {Number(year) >= 2025
+          ? "This year is a local extension. It is not in the Elanco feed."
+          : "This year comes from the Elanco tick-sightings API."}
+      </p>
       {query.isLoading ? <p>Loading the chart…</p> : null}
       {query.isError ? (
         <p role="alert">The chart could not be loaded. The database may not be seeded yet.</p>
       ) : null}
       <div className="chart-frame" aria-hidden="true">
-        <ResponsiveContainer width="100%" height={320}>
+        <ResponsiveContainer width="100%" height="100%">
           <BarChart data={rows}>
             <CartesianGrid stroke="#d4e2ef" vertical={false} />
             <XAxis dataKey="month" />
@@ -84,6 +89,7 @@ export default function SeasonalChart() {
           </BarChart>
         </ResponsiveContainer>
       </div>
+      <div className="table-scroll">
       <table className="data-table">
         <caption>
           Monthly tick sightings in {place} during {year}
@@ -103,6 +109,7 @@ export default function SeasonalChart() {
           ))}
         </tbody>
       </table>
+      </div>
     </div>
   );
 }

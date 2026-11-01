@@ -1,7 +1,7 @@
 "use client";
 
+import { fetchAllSightings } from "@/lib/fetch-sightings";
 import { toMapPoints } from "@/lib/map-points";
-import type { SightingListResponse } from "@/lib/types";
 import { useQuery } from "@tanstack/react-query";
 import dynamic from "next/dynamic";
 import Link from "next/link";
@@ -17,11 +17,8 @@ export default function MapPreview() {
   const router = useRouter();
   const sightings = useQuery({
     queryKey: ["sightings", "preview"],
-    queryFn: async () => {
-      const response = await fetch("/api/sightings?limit=1000");
-      if (!response.ok) throw new Error("Could not load sightings");
-      return (await response.json()) as SightingListResponse;
-    },
+    queryFn: () => fetchAllSightings(),
+    staleTime: 60_000,
   });
 
   const points = useMemo(
@@ -41,7 +38,6 @@ export default function MapPreview() {
             points={points}
             selectedId={null}
             onSelect={(id) => router.push(`/map?sighting=${id}`)}
-            onBounds={() => {}}
           />
         )}
       </div>

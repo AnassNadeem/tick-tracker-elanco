@@ -2,7 +2,7 @@
 
 import type { MapPoint } from "@/lib/map-points";
 import { LeafletContext, createLeafletContext } from "@react-leaflet/core";
-import { Map as LeafletMap, divIcon, type LatLngExpression } from "leaflet";
+import { Map as LeafletMap, divIcon, type DivIcon, type LatLngExpression } from "leaflet";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { Marker, TileLayer, useMap, useMapEvents } from "react-leaflet";
 import Supercluster from "supercluster";
@@ -16,6 +16,20 @@ type ClusterProps = {
 };
 
 const CLUSTER_THRESHOLD = 200;
+const icons = new Map<string, DivIcon>();
+
+function iconFor(key: string, html: string, size: number) {
+  const cached = icons.get(key);
+  if (cached) return cached;
+  const icon = divIcon({
+    className: "tick-marker-wrap",
+    html,
+    iconSize: [size, size],
+    iconAnchor: [size / 2, size / 2],
+  });
+  icons.set(key, icon);
+  return icon;
+}
 
 function MapLabel() {
   const map = useMap();
@@ -121,18 +135,12 @@ function SightingMarkers({
   points,
   selectedId,
   onSelect,
-  onBounds,
 }: {
   points: MapPoint[];
   selectedId: string | null;
   onSelect: (id: string) => void;
-  onBounds: (bounds: { north: number; south: number; east: number; west: number }) => void;
 }) {
   const map = useMap();
-  const onBoundsRef = useRef(onBounds);
-  useEffect(() => {
-    onBoundsRef.current = onBounds;
-  }, [onBounds]);
   const [view, setView] = useState(() => {
     const box = map.getBounds();
     return {
@@ -147,26 +155,15 @@ function SightingMarkers({
   useMapEvents({
     moveend: () => {
       const next = map.getBounds();
-      const box = {
-        north: next.getNorth(),
+      setView({
+        zoom: map.getZoom(),
+        west: next.getWest(),
         south: next.getSouth(),
         east: next.getEast(),
-        west: next.getWest(),
-      };
-      setView({ zoom: map.getZoom(), ...box });
-      onBoundsRef.current(box);
+        north: next.getNorth(),
+      });
     },
   });
-
-  useEffect(() => {
-    const next = map.getBounds();
-    onBoundsRef.current({
-      north: next.getNorth(),
-      south: next.getSouth(),
-      east: next.getEast(),
-      west: next.getWest(),
-    });
-  }, [map]);
 
   const index = useMemo(() => {
     const cluster = new Supercluster<MapPoint, ClusterProps>({ radius: 56, maxZoom: 16 });
@@ -200,12 +197,7 @@ function SightingMarkers({
         if (isCluster(feature.properties)) {
           const count = feature.properties.point_count;
           const clusterId = feature.properties.cluster_id;
-          const icon = divIcon({
-            className: "tick-marker-wrap",
-            html: `<span class="cluster-marker">${count}</span>`,
-            iconSize: [40, 40],
-            iconAnchor: [20, 20],
-          });
+          const icon = iconFor(`cluster-${count}`, `<span class="cluster-marker">${count}</span>`, 40);
           return (
             <Marker
               key={`cluster-${clusterId}`}
@@ -224,17 +216,17 @@ function SightingMarkers({
         }
 
         const point = feature.properties;
-        const icon = divIcon({
-          className: "tick-marker-wrap",
-          html: markerHtml({
+        const selected = point.id === selectedId;
+        const icon = iconFor(
+          `${point.speciesSlug}|${point.severity ?? ""}|${point.recent}|${selected}`,
+          markerHtml({
             speciesSlug: point.speciesSlug,
             severity: point.severity,
             recent: point.recent,
-            selected: point.id === selectedId,
+            selected,
           }),
-          iconSize: [28, 28],
-          iconAnchor: [14, 14],
-        });
+          28,
+        );
         return (
           <Marker
             key={point.id}
@@ -255,24 +247,13 @@ export default function TickMap({
   points,
   selectedId,
   onSelect,
-  onBounds,
   focus = null,
 }: {
   points: MapPoint[];
   selectedId: string | null;
   onSelect: (id: string) => void;
-  onBounds: (bounds: { north: number; south: number; east: number; west: number }) => void;
   focus?: { lat: number; lng: number } | null;
 }) {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    return <div className="tick-map map-loading">Loading the map…</div>;
-  }
-
   return (
     <SafeMap>
       <TileLayer
@@ -281,12 +262,7 @@ export default function TickMap({
       />
       <MapLabel />
       <FlyToCity focus={focus} />
-      <SightingMarkers
-        points={points}
-        selectedId={selectedId}
-        onSelect={onSelect}
-        onBounds={onBounds}
-      />
+      <SightingMarkers points={points} selectedId={selectedId} onSelect={onSelect} />
     </SafeMap>
   );
 }

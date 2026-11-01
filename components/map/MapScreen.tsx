@@ -5,10 +5,11 @@ import Legend from "@/components/map/Legend";
 import SightingPanel from "@/components/map/SightingPanel";
 import { useDebounced } from "@/components/useDebounced";
 import { CITIES } from "@/lib/cities";
-import { filtersFromParams, filtersToQuery, pageQuery, type MapFilters } from "@/lib/view";
+import { fetchAllSightings } from "@/lib/fetch-sightings";
+import { filtersFromParams, pageQuery, type MapFilters } from "@/lib/view";
 import { toMapPoints } from "@/lib/map-points";
-import type { SightingListResponse, SpeciesDto } from "@/lib/types";
-import { useQuery } from "@tanstack/react-query";
+import type { SpeciesDto } from "@/lib/types";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import dynamic from "next/dynamic";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
@@ -17,10 +18,6 @@ const TickMap = dynamic(() => import("./TickMap"), {
   ssr: false,
   loading: () => <div className="map-loading">Loading the map…</div>,
 });
-
-function clamp(value: number, min: number, max: number) {
-  return Math.min(max, Math.max(min, value));
-}
 
 type HealthResponse = {
   db: "ok" | "error";
@@ -33,14 +30,7 @@ export default function MapScreen() {
   const router = useRouter();
   const [filters, setFilters] = useState<MapFilters>(() => filtersFromParams(searchParams));
   const [selectedId, setSelectedId] = useState<string | null>(searchParams.get("sighting"));
-  const [bounds, setBounds] = useState<{
-    north: number;
-    south: number;
-    east: number;
-    west: number;
-  } | null>(null);
   const debouncedFilters = useDebounced(filters, 300);
-  const debouncedBounds = useDebounced(bounds, 300);
 
   useEffect(() => {
     const next = pageQuery(debouncedFilters, selectedId);
@@ -50,25 +40,10 @@ export default function MapScreen() {
   }, [debouncedFilters, selectedId, router, searchParams]);
 
   const sightingsQuery = useQuery({
-    queryKey: ["sightings", debouncedFilters, debouncedBounds],
-    queryFn: async () => {
-      const params = filtersToQuery(debouncedFilters);
-      if (debouncedBounds) {
-        const north = clamp(debouncedBounds.north, -90, 90);
-        const south = clamp(debouncedBounds.south, -90, 90);
-        const east = clamp(debouncedBounds.east, -180, 180);
-        const west = clamp(debouncedBounds.west, -180, 180);
-        if (south <= north && west <= east) {
-          params.set("north", String(north));
-          params.set("south", String(south));
-          params.set("east", String(east));
-          params.set("west", String(west));
-        }
-      }
-      const response = await fetch(`/api/sightings?${params.toString()}`);
-      if (!response.ok) throw new Error("Could not load sightings");
-      return (await response.json()) as SightingListResponse;
-    },
+    queryKey: ["sightings", debouncedFilters],
+    queryFn: () => fetchAllSightings(debouncedFilters),
+    placeholderData: keepPreviousData,
+    staleTime: 60_000,
   });
 
   const speciesQuery = useQuery({
@@ -119,13 +94,7 @@ export default function MapScreen() {
         </p>
       ) : null}
       <div className="map-stage">
-        <TickMap
-          points={points}
-          selectedId={selectedId}
-          onSelect={setSelectedId}
-          onBounds={setBounds}
-          focus={focus}
-        />
+        <TickMap points={points} selectedId={selectedId} onSelect={setSelectedId} focus={focus} />
         <Legend />
         {selectedId ? (
           <SightingPanel id={selectedId} onClose={() => setSelectedId(null)} onSelect={setSelectedId} />

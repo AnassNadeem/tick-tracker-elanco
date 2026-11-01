@@ -1,6 +1,7 @@
 "use client";
 
 import { useDialogBehavior } from "@/components/useDialogBehavior";
+import { sourceLabel } from "@/lib/source";
 import { formatObserved } from "@/lib/view";
 import type { MonthlyCount, SightingDto, TimelineEntry } from "@/lib/types";
 import { useQuery } from "@tanstack/react-query";
@@ -135,11 +136,13 @@ export default function SightingPanel({
               </div>
             </div>
             <div className="panel-badges">
+              <span className="panel-badge">{sourceLabel(sighting.source)}</span>
               <span className="panel-badge">
-                {sighting.source === "user_submitted" ? "Community report" : "Imported record"}
-              </span>
-              <span className="panel-badge">
-                {sighting.severity ? `${sighting.severity} severity` : "Severity not recorded"}
+                {sighting.severity
+                  ? sighting.source === "user_submitted"
+                    ? `${sighting.severity} severity`
+                    : `${sighting.severity} risk, from the species guide`
+                  : "Severity not recorded"}
               </span>
             </div>
           </>
