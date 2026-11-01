@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const LINKS = [
   { href: "/map", label: "Map" },
@@ -13,9 +14,20 @@ const LINKS = [
 
 export default function Header() {
   const pathname = usePathname();
+  const [openPath, setOpenPath] = useState<string | null>(null);
+  const open = openPath === pathname;
+
+  useEffect(() => {
+    if (!open) return;
+    function onKey(event: KeyboardEvent) {
+      if (event.key === "Escape") setOpenPath(null);
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open]);
 
   return (
-    <header className="site-header">
+    <header className={open ? "site-header is-open" : "site-header"}>
       <Link href="/" className="brand" aria-label="Tick Tracker home">
         <Image
           src="/brand/elanco-logo.png"
@@ -30,8 +42,19 @@ export default function Header() {
         </span>
       </Link>
 
-      <div className="header-right">
-        <nav className="primary-nav" aria-label="Primary">
+      <button
+        type="button"
+        className="nav-toggle"
+        aria-expanded={open}
+        aria-controls="site-menu"
+        onClick={() => setOpenPath(open ? null : pathname)}
+      >
+        <span className="sr-only">{open ? "Close menu" : "Open menu"}</span>
+        <span className="nav-toggle-icon" aria-hidden="true" />
+      </button>
+
+      <div className="header-right" id="site-menu">
+        <nav className="primary-nav" aria-label="Primary" onClick={() => setOpenPath(null)}>
           <ul>
             {LINKS.map((link) => {
               const current = pathname === link.href || pathname.startsWith(`${link.href}/`);

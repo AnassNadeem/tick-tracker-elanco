@@ -276,6 +276,44 @@ a {
   color: white;
 }
 
+.nav-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 1px solid var(--line);
+  border-radius: 0.7rem;
+  background: white;
+  cursor: pointer;
+}
+
+.nav-toggle-icon,
+.nav-toggle-icon::before,
+.nav-toggle-icon::after {
+  display: block;
+  width: 1.1rem;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--brand-darker);
+  position: relative;
+}
+
+.nav-toggle-icon::before,
+.nav-toggle-icon::after {
+  content: "";
+  position: absolute;
+  left: 0;
+}
+
+.nav-toggle-icon::before {
+  top: -6px;
+}
+
+.nav-toggle-icon::after {
+  top: 6px;
+}
+
 /* ------------------------------------------------------------------ */
 /* Footer                                                            */
 /* ------------------------------------------------------------------ */
@@ -1053,9 +1091,17 @@ a {
   border-radius: 0.55rem;
   background: white;
   padding: 0 0.6rem;
-  min-width: 9rem;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   font-size: 0.95rem;
   color: var(--ink);
+}
+
+.filter-fields input,
+.filter-fields select {
+  width: auto;
+  min-width: 8.5rem;
 }
 
 .filter-fields input:focus,
@@ -1129,7 +1175,13 @@ a {
 .chart-frame {
   width: 100%;
   height: 320px;
+  min-width: 0;
   margin: 1rem 0;
+}
+
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
 }
 
 .data-table {
@@ -1179,6 +1231,43 @@ a {
 .leaflet-div-icon.tick-marker-wrap {
   background: transparent;
   border: 0;
+  cursor: pointer;
+}
+
+.tick-pin {
+  position: relative;
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  transition: transform 0.15s ease;
+}
+
+.tick-pin::after {
+  content: "";
+  position: absolute;
+  inset: -5px;
+  border-radius: 999px;
+  border: 2px solid transparent;
+  pointer-events: none;
+}
+
+.leaflet-marker-icon:hover,
+.leaflet-marker-icon:focus-visible {
+  z-index: 700 !important;
+}
+
+.leaflet-marker-icon:hover .tick-pin,
+.leaflet-marker-icon:focus-visible .tick-pin,
+.tick-pin:has(.tick-marker[data-selected="true"]) {
+  transform: scale(1.18);
+}
+
+.leaflet-marker-icon:hover .tick-pin::after,
+.leaflet-marker-icon:focus-visible .tick-pin::after,
+.tick-pin:has(.tick-marker[data-selected="true"])::after {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px rgba(0, 112, 200, 0.28);
 }
 
 .tick-marker {
@@ -1277,6 +1366,13 @@ a {
   border: 2px solid white;
   font-weight: 700;
   box-shadow: var(--shadow-md);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.leaflet-marker-icon:hover .cluster-marker,
+.leaflet-marker-icon:focus-visible .cluster-marker {
+  transform: scale(1.08);
+  box-shadow: 0 0 0 4px rgba(0, 112, 200, 0.35);
 }
 
 .legend {
@@ -1792,26 +1888,129 @@ a {
   .report-form {
     grid-template-columns: 1fr;
   }
+
+  .hero-inner {
+    width: min(72rem, calc(100% - 1.5rem));
+    padding: 2rem 0 2.5rem;
+  }
+
+  .hero-actions {
+    flex-direction: column;
+  }
+
+  .hero-actions .btn {
+    width: 100%;
+  }
+
+  .section {
+    width: min(72rem, calc(100% - 1.5rem));
+    padding: 2.25rem 0;
+  }
+
+  .page {
+    margin: 1.25rem auto 2rem;
+  }
+
+  .chart-frame {
+    height: 240px;
+  }
+
+  .footer-grid,
+  .footer-bottom-inner {
+    width: min(72rem, calc(100% - 1.5rem));
+  }
 }
 
 @media (max-width: 720px) {
   .site-header {
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     gap: 0.6rem;
+    padding: 0.6rem 0.9rem;
+  }
+
+  .nav-toggle {
+    display: inline-flex;
+    margin-left: auto;
   }
 
   .header-right {
-    width: 100%;
-    justify-content: space-between;
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 30;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+    padding: 0.75rem 0.9rem 1rem;
+    background: white;
+    border-bottom: 1px solid var(--line);
+    box-shadow: var(--shadow-md);
+  }
+
+  .site-header.is-open .header-right {
+    display: flex;
   }
 
   .primary-nav ul {
-    gap: 0.1rem;
+    flex-direction: column;
+    gap: 0.2rem;
   }
 
   .primary-nav a {
-    padding: 0.4rem 0.6rem;
-    font-size: 0.9rem;
+    display: block;
+    padding: 0.7rem 0.8rem;
+  }
+
+  .header-cta {
+    width: 100%;
+  }
+
+  .wordmark {
+    font-size: 1.15rem;
+  }
+
+  .map-shell {
+    height: auto;
+    min-height: 0;
+  }
+
+  .map-stage {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    min-height: 0;
+  }
+
+  .map-stage .tick-map,
+  .map-stage .map-loading {
+    height: 70dvh;
+    min-height: 22rem;
+    flex: none;
+  }
+
+  .filter-bar {
+    padding: 0.75rem;
+  }
+
+  .filter-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+  }
+
+  .filter-fields > div,
+  .filter-fields input,
+  .filter-fields select,
+  .recent-toggle,
+  .filter-fields .text-button {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .filter-count {
+    width: 100%;
   }
 
   .footer-grid {
@@ -1835,12 +2034,18 @@ a {
     border-radius: 1rem 1rem 0 0;
   }
 
-  .map-stage {
-    display: flex;
-    flex-direction: column;
+  .actions {
+    grid-template-columns: 1fr;
   }
 
-  .actions {
+  .card,
+  .panel {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .filter-fields {
     grid-template-columns: 1fr;
   }
 }
